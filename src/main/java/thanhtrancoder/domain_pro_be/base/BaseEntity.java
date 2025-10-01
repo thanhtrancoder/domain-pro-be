@@ -1,12 +1,14 @@
 package thanhtrancoder.domain_pro_be.base;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.MappedSuperclass;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+@MappedSuperclass
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
