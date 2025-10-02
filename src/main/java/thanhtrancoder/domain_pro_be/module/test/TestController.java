@@ -7,6 +7,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import thanhtrancoder.domain_pro_be.common.entity.ResponseCustom;
+import thanhtrancoder.domain_pro_be.common.entity.ResponseCustomService;
+import thanhtrancoder.domain_pro_be.module.account.AccountEntity;
+import thanhtrancoder.domain_pro_be.security.auth.AuthService;
 
 import java.time.LocalDateTime;
 
@@ -15,6 +18,10 @@ import java.time.LocalDateTime;
 public class TestController {
     @Autowired
     private TestService testService;
+    @Autowired
+    private ResponseCustomService res;
+    @Autowired
+    private AuthService authService;
 
     @GetMapping
     public ResponseEntity<ResponseCustom<TestEntity>> test() {
@@ -27,25 +34,20 @@ public class TestController {
         testEntity.setUpdatedBy(1L);
         testEntity.setIsDeleted(false);
 
-        ResponseCustom<TestEntity> responseCustom = new ResponseCustom<>(
-                LocalDateTime.now(),
-                200,
-                "test ok",
-                testEntity
-        );
-
-        return ResponseEntity.ok(responseCustom);
+        return res.success("test ok", testEntity);
     }
 
     @GetMapping("/user")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<ResponseCustom<TestEntity>> getUser() {
-        ResponseCustom<TestEntity> responseCustom = new ResponseCustom<>(
-                LocalDateTime.now(),
-                200,
-                "test user ok",
-                null
-        );
-        return ResponseEntity.ok(responseCustom);
+        return res.success("test user ok", null);
+    }
+
+    @GetMapping("/get-info")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ResponseCustom<AccountEntity>> getCurrentAccount() {
+        AccountEntity accountEntity = authService.getCurrentAccount();
+
+        return res.success("Thông tin tài khoản hiện tại", accountEntity);
     }
 }

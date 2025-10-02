@@ -1,51 +1,39 @@
 package thanhtrancoder.domain_pro_be.common.exceptions;
 
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import thanhtrancoder.domain_pro_be.common.entity.ResponseCustom;
+import thanhtrancoder.domain_pro_be.common.entity.ResponseCustomService;
 
-import java.time.LocalDateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler(AuthorizationDeniedException.class)
-    public ResponseEntity<ResponseCustom> handleException(AuthorizationDeniedException exception) {
-        exception.printStackTrace();
-        ResponseCustom responseCustom = new ResponseCustom(
-                LocalDateTime.now(),
-                HttpStatus.FORBIDDEN.value(),
-                "Bạn không có quyền truy cập tài nguyên này.",
-                null
-        );
+    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-        return ResponseEntity.status(HttpStatus.FORBIDDEN.value()).body(responseCustom);
+    @Autowired
+    private ResponseCustomService res;
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<ResponseCustom<Object>> handleException(AuthorizationDeniedException exception) {
+        logger.error("Access denied");
+
+        return res.accessDenied("Bạn không có quyền truy cập tài nguyên này.");
     }
 
     @ExceptionHandler(CustomException.class)
-    public ResponseEntity<ResponseCustom> handleException(CustomException exception) {
-        ResponseCustom responseCustom = new ResponseCustom(
-                LocalDateTime.now(),
-                HttpStatus.NOT_FOUND.value(),
-                exception.getMessage(),
-                null
-        );
-
-        return ResponseEntity.status(404).body(responseCustom);
+    public ResponseEntity<ResponseCustom<Object>> handleException(CustomException exception) {
+        return res.fail(exception.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ResponseCustom> handleException(Exception exception) {
-        exception.printStackTrace();
-        ResponseCustom responseCustom = new ResponseCustom(
-                LocalDateTime.now(),
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "Có lỗi xảy ra trong quá trình xử lý",
-                null
-        );
+    public ResponseEntity<ResponseCustom<Object>> handleException(Exception exception) {
+        logger.error("Server error", exception);
 
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR.value()).body(responseCustom);
+        return res.error("Có lỗi xảy ra trong quá trình xử lý.");
     }
 }

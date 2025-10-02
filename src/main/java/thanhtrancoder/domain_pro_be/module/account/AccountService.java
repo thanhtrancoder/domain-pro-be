@@ -15,6 +15,10 @@ public class AccountService {
         return accountRepository.findByEmail(email);
     }
 
+    public AccountEntity getActiveAccountByEmail(String email) {
+        return accountRepository.findOneByEmailAndIsDeleted(email, false);
+    }
+
     public AccountEntity create(AccountEntity account) {
         if (accountRepository.existsByEmail(account.getEmail())) {
             throw new CustomException("Email này đã tồn tại, vui lòng chọn email khác");

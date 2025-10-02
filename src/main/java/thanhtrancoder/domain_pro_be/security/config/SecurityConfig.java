@@ -61,7 +61,6 @@ public class SecurityConfig {
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(user -> user.oidcUserService(customOidcUserService))
                         .successHandler(oAuth2SuccessHandler)
-//                        .defaultSuccessUrl(successUrl, true)
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)

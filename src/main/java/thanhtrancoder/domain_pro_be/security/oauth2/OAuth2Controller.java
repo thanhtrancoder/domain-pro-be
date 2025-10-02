@@ -8,17 +8,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import thanhtrancoder.domain_pro_be.common.entity.ResponseCustom;
+import thanhtrancoder.domain_pro_be.common.entity.ResponseCustomService;
 import thanhtrancoder.domain_pro_be.common.exceptions.CustomException;
 import thanhtrancoder.domain_pro_be.module.account.AccountEntity;
 import thanhtrancoder.domain_pro_be.module.account.AccountService;
 import thanhtrancoder.domain_pro_be.security.auth.dto.LoginRes;
 import thanhtrancoder.domain_pro_be.security.jwt.JwtUtil;
 
-import java.time.LocalDateTime;
-
 @RestController
 @RequestMapping("/api/oauth2")
 public class OAuth2Controller {
+    @Autowired
+    private ResponseCustomService res;
     @Autowired
     private JwtUtil jwtUtil;
     @Autowired
@@ -60,12 +61,6 @@ public class OAuth2Controller {
         loginRes.setFullname(account.getFullname());
         loginRes.setEmail(account.getEmail());
 
-        ResponseCustom responseCustom = new ResponseCustom();
-        responseCustom.setTimestamp(LocalDateTime.now());
-        responseCustom.setStatus(200);
-        responseCustom.setMessage("Đăng nhập thành công");
-        responseCustom.setData(loginRes);
-
-        return ResponseEntity.ok(responseCustom);
+        return res.success("Đăng nhập thành công.", loginRes);
     }
 }
