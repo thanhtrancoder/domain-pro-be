@@ -72,4 +72,8 @@ public class AuthService {
         }
         return null;
     }
+
+    public Long getCurrentAccountId() {
+        return getCurrentAccount().getAccountId();
+    }
 }

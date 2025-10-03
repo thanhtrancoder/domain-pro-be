@@ -2,7 +2,9 @@ package thanhtrancoder.domain_pro_be.module.account;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import thanhtrancoder.domain_pro_be.common.exceptions.CustomException;
+import thanhtrancoder.domain_pro_be.module.accountRole.AccountRoleService;
 
 import java.time.LocalDateTime;
 
@@ -10,6 +12,8 @@ import java.time.LocalDateTime;
 public class AccountService {
     @Autowired
     private AccountRepository accountRepository;
+    @Autowired
+    private AccountRoleService accountRoleService;
 
     public AccountEntity getAccountByEmail(String email) {
         return accountRepository.findByEmail(email);
@@ -19,15 +23,24 @@ public class AccountService {
         return accountRepository.findOneByEmailAndIsDeleted(email, false);
     }
 
+    @Transactional
     public AccountEntity create(AccountEntity account) {
         if (accountRepository.existsByEmail(account.getEmail())) {
             throw new CustomException("Email này đã tồn tại, vui lòng chọn email khác");
         }
 
-        account.setCreatedAt(LocalDateTime.now());
-        account.setCreatedBy(0L);
-        account.setIsDeleted(false);
-        return accountRepository.save(account);
+        try {
+            account.setCreatedAt(LocalDateTime.now());
+            account.setCreatedBy(0L);
+            account.setIsDeleted(false);
+
+            AccountEntity accountNew = accountRepository.save(account);
+            accountRoleService.insert(accountNew.getAccountId(), 2L, accountNew.getAccountId());
+
+            return accountNew;
+        } catch (Exception e) {
+            throw new CustomException("Có lỗi xảy ra khi tạo tài khoản.");
+        }
     }
 
     public AccountEntity loginByEmail(String email) {

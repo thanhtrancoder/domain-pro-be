@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import thanhtrancoder.domain_pro_be.common.entity.ResponseCustom;
 import thanhtrancoder.domain_pro_be.common.entity.ResponseCustomService;
@@ -21,6 +22,7 @@ public class RoleController {
     private ResponseCustomService response;
 
     @GetMapping("/all")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ResponseCustom<Page<RoleEntity>>> getAll(
             @PageableDefault(size = 10) Pageable pageable) {
         Page<RoleEntity> roleList = roleService.getAll(pageable);
@@ -32,6 +34,7 @@ public class RoleController {
     }
 
     @PostMapping("/create")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ResponseCustom<RoleEntity>> create(@RequestBody RoleEntity roleEntity) {
         RoleEntity roleCreated = roleService.create(roleEntity);
 

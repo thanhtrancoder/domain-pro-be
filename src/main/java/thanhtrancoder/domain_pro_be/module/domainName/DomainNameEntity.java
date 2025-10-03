@@ -40,7 +40,7 @@ public class DomainNameEntity extends BaseEntity {
     @Column(name = "dns_provider", nullable = false, length = 45)
     private String dnsProvider;
 
-    @Column(name = "account_account_id", nullable = false)
+    @Column(name = "account_id", nullable = false)
     private Long accountId;
 
     @Column(name = "status", nullable = false)
