@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import thanhtrancoder.domain_pro_be.common.exceptions.CustomException;
+import thanhtrancoder.domain_pro_be.common.exceptions.QueryException;
 
 import java.time.LocalDateTime;
 
@@ -26,7 +27,7 @@ public class RoleService {
             roleEntity.setIsDeleted(false);
             return roleRepository.save(roleEntity);
         } catch (Exception e) {
-            throw new CustomException("Có lỗi xảy ra khi tạo role.");
+            throw new QueryException("Có lỗi xảy ra khi tạo role.", e);
         }
 
     }

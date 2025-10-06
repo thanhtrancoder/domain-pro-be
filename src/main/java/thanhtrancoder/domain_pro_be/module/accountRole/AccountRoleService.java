@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import thanhtrancoder.domain_pro_be.common.exceptions.CustomException;
+import thanhtrancoder.domain_pro_be.common.exceptions.QueryException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,7 +29,7 @@ public class AccountRoleService {
             accountRole.setIsDeleted(false);
             return accountRoleRepository.save(accountRole);
         } catch (Exception e) {
-            throw new CustomException("có lỗi xảy ra khi thực hiện phân quyền cho tài khoản.");
+            throw new QueryException("có lỗi xảy ra khi thực hiện phân quyền cho tài khoản.", e);
         }
     }
 }

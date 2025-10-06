@@ -10,11 +10,11 @@ public interface DomainExtendRepository extends JpaRepository<DomainExtendEntity
 
     // @formatter:off
     @Query(nativeQuery = true, value = "SELECT * " +
-            "FROM domain_pro.domain_extend de " +
-            "WHERE de.domain_extend_id NOT IN ( " +
+            "FROM domain_extend de " +
+            "WHERE de.is_deleted = 0 AND de.domain_extend_id NOT IN ( " +
                 "SELECT dn.domain_extend_id " +
-                "FROM domain_pro.domain_name dn " +
-                "WHERE dn.domain_name = :domainName " +
+                "FROM domain_name dn " +
+                "WHERE dn.is_deleted = 0 AND dn.expires_at >= CURDATE() AND dn.domain_name = :domainName " +
             ")")
     Page<DomainExtendEntity> findAvailableDomainExtend(String domainName, Pageable pageable);
     // @formatter:on

@@ -30,10 +30,15 @@ public class GlobalExceptionHandler {
         return res.fail(exception.getMessage());
     }
 
+    @ExceptionHandler(QueryException.class)
+    public ResponseEntity<ResponseCustom<Object>> handleException(QueryException exception) {
+        logger.error("Server error", exception);
+        return res.unavailable(exception.getMessage());
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ResponseCustom<Object>> handleException(Exception exception) {
         logger.error("Server error", exception);
-
         return res.error("Có lỗi xảy ra trong quá trình xử lý.");
     }
 }

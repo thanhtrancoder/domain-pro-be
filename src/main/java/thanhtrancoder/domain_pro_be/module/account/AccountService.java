@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import thanhtrancoder.domain_pro_be.common.exceptions.CustomException;
+import thanhtrancoder.domain_pro_be.common.exceptions.QueryException;
 import thanhtrancoder.domain_pro_be.module.accountRole.AccountRoleService;
 
 import java.time.LocalDateTime;
@@ -39,7 +40,7 @@ public class AccountService {
 
             return accountNew;
         } catch (Exception e) {
-            throw new CustomException("Có lỗi xảy ra khi tạo tài khoản.");
+            throw new QueryException("Có lỗi xảy ra khi tạo tài khoản.", e);
         }
     }
 

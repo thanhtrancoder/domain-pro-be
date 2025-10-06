@@ -10,4 +10,11 @@ import thanhtrancoder.domain_pro_be.module.domainName.dto.DomainNameDto;
 public class DomainNameService {
     @Autowired
     private DomainNameRepository domainNameRepository;
+
+    public Boolean isAvailableDomain(String domainName, Long domainExtendId) {
+        if (domainNameRepository.isAvailableDomain(domainName, domainExtendId) == 1) {
+            return true;
+        }
+        return false;
+    }
 }

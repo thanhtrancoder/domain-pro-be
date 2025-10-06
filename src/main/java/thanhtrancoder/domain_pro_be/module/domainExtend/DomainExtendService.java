@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import thanhtrancoder.domain_pro_be.common.exceptions.CustomException;
+import thanhtrancoder.domain_pro_be.common.exceptions.QueryException;
 import thanhtrancoder.domain_pro_be.module.domainExtend.dto.DomainExtendDto;
 
 import java.time.LocalDateTime;
@@ -30,7 +31,7 @@ public class DomainExtendService {
             domainExtend.setIsDeleted(false);
             return domainExtendRepository.save(domainExtend);
         } catch (Exception e) {
-            throw new CustomException("Có lỗi xảy ra khi tạo domain extend.");
+            throw new QueryException("Có lỗi xảy ra khi tạo domain extend.", e);
         }
     }
 

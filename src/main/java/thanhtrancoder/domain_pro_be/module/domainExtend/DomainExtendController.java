@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import thanhtrancoder.domain_pro_be.common.entity.ResponseCustom;
 import thanhtrancoder.domain_pro_be.common.entity.ResponseCustomService;
 import thanhtrancoder.domain_pro_be.module.domainExtend.dto.DomainExtendDto;
-import thanhtrancoder.domain_pro_be.module.domainName.dto.DomainNameDto;
 import thanhtrancoder.domain_pro_be.security.auth.AuthService;
 
 @RestController

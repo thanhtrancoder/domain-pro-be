@@ -25,6 +25,14 @@ public class ResponseCustomService {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
+    public <T> ResponseEntity<ResponseCustom<T>> unavailable(String message) {
+        ResponseCustom<T> response = new ResponseCustom<>();
+        response.setTimestamp(LocalDateTime.now());
+        response.setStatus(HttpStatus.SERVICE_UNAVAILABLE.value());
+        response.setMessage(message);
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(response);
+    }
+
     public <T> ResponseEntity<ResponseCustom<T>> error(String message) {
         ResponseCustom<T> response = new ResponseCustom<>();
         response.setTimestamp(LocalDateTime.now());
