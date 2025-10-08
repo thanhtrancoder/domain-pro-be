@@ -33,6 +33,14 @@ public class ResponseCustomService {
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(response);
     }
 
+    public <T> ResponseEntity<ResponseCustom<T>> badRequest(String message) {
+        ResponseCustom<T> response = new ResponseCustom<>();
+        response.setTimestamp(LocalDateTime.now());
+        response.setStatus(HttpStatus.BAD_REQUEST.value());
+        response.setMessage(message);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
     public <T> ResponseEntity<ResponseCustom<T>> error(String message) {
         ResponseCustom<T> response = new ResponseCustom<>();
         response.setTimestamp(LocalDateTime.now());

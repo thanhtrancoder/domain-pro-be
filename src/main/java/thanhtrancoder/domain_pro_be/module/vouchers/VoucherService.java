@@ -20,7 +20,7 @@ public class VoucherService {
     @Autowired
     private ModelMapper modelMapper;
 
-    public VoucherApplyRes applyVoucher(String code, Long amount, Long accountId) {
+    public VoucherApplyRes applyVoucher(String code, Long amount) {
         VoucherEntity voucher = voucherRepository.findOneByCodeAndIsDeleted(code, false);
         if (voucher == null) {
             throw new CustomException("Không tìm thấy thông tin voucher.");

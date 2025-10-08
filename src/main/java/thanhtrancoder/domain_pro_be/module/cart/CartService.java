@@ -10,7 +10,8 @@ import thanhtrancoder.domain_pro_be.common.exceptions.CustomException;
 import thanhtrancoder.domain_pro_be.common.exceptions.QueryException;
 import thanhtrancoder.domain_pro_be.module.cart.dto.CartDto;
 import thanhtrancoder.domain_pro_be.module.cart.dto.CartItemQuery;
-import thanhtrancoder.domain_pro_be.module.cart.dto.CartPriceQuery;
+import thanhtrancoder.domain_pro_be.module.domainExtend.DomainExtendService;
+import thanhtrancoder.domain_pro_be.module.domainExtend.dto.DomainPriceQuery;
 import thanhtrancoder.domain_pro_be.module.domainName.DomainNameService;
 
 import java.time.LocalDateTime;
@@ -21,6 +22,8 @@ public class CartService {
     private CartRepository cartRepository;
     @Autowired
     private DomainNameService domainNameService;
+    @Autowired
+    private DomainExtendService domainExtendService;
     @Autowired
     private ModelMapper modelMapper;
 
@@ -84,11 +87,14 @@ public class CartService {
                 throw new QueryException("Có lỗi xảy ra khi cập nhật số lượng trong giỏ hàng.", e);
             }
         }
-        CartPriceQuery cartPrice = cartRepository.getCartPrice(cart.getDomainExtendId(), cart.getPeriod());
+        DomainPriceQuery domainPriceQuery = domainExtendService.getPrice(
+                cart.getDomainExtendId(),
+                cart.getPeriod()
+        );
         CartDto cartItem = modelMapper.map(cart, CartDto.class);
-        cartItem.setDomainExtend(cartPrice.getDomainExtend());
-        cartItem.setPrice(cartPrice.getPrice());
-        cartItem.setDiscountPrice(cartPrice.getDiscountPrice());
+        cartItem.setDomainExtend(domainPriceQuery.getDomainExtend());
+        cartItem.setPrice(domainPriceQuery.getPrice());
+        cartItem.setDiscountPrice(domainPriceQuery.getDiscountPrice());
 
         return cartItem;
     }

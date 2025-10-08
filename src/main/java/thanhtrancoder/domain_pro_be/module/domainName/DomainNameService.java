@@ -1,20 +1,31 @@
 package thanhtrancoder.domain_pro_be.module.domainName;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import thanhtrancoder.domain_pro_be.module.domainName.dto.DomainNameDashboardRes;
 import thanhtrancoder.domain_pro_be.module.domainName.dto.DomainNameDto;
 
 @Service
 public class DomainNameService {
     @Autowired
     private DomainNameRepository domainNameRepository;
+    @Autowired
+    private ModelMapper modelMapper;
 
     public Boolean isAvailableDomain(String domainName, Long domainExtendId) {
         if (domainNameRepository.isAvailableDomain(domainName, domainExtendId) == 1) {
             return true;
         }
         return false;
+    }
+
+    public DomainNameDashboardRes getCount(Long accountId) {
+        return modelMapper.map(
+                domainNameRepository.getCount(accountId),
+                DomainNameDashboardRes.class
+        );
     }
 }

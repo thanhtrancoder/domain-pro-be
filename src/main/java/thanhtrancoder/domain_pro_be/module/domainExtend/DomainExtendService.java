@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import thanhtrancoder.domain_pro_be.common.exceptions.CustomException;
 import thanhtrancoder.domain_pro_be.common.exceptions.QueryException;
 import thanhtrancoder.domain_pro_be.module.domainExtend.dto.DomainExtendDto;
+import thanhtrancoder.domain_pro_be.module.domainExtend.dto.DomainPriceQuery;
 
 import java.time.LocalDateTime;
 
@@ -21,11 +22,17 @@ public class DomainExtendService {
 
     @Transactional
     public DomainExtendEntity adminInsert(DomainExtendDto domainExtendDto, Long createdBy) {
-        if (domainExtendRepository.existsByNameAndIsDeleted(domainExtendDto.getName(), false)) {
+        if (domainExtendRepository.existsByNameAndIsDeleted(
+                domainExtendDto.getName(),
+                false)
+        ) {
             throw new CustomException("Tên domain extend đã tồn tại.");
         }
         try {
-            DomainExtendEntity domainExtend = modelMapper.map(domainExtendDto, DomainExtendEntity.class);
+            DomainExtendEntity domainExtend = modelMapper.map(
+                    domainExtendDto,
+                    DomainExtendEntity.class
+            );
             domainExtend.setCreatedAt(LocalDateTime.now());
             domainExtend.setCreatedBy(createdBy);
             domainExtend.setIsDeleted(false);
@@ -41,7 +48,18 @@ public class DomainExtendService {
         if (domainNameSplit.length > 1) {
             domainOnlyName = domainNameSplit[domainNameSplit.length - 2];
         }
-        Page<DomainExtendEntity> domainExtendEntities = domainExtendRepository.findAvailableDomainExtend(domainOnlyName, pageable);
-        return domainExtendEntities.map(domainExtendEntity -> modelMapper.map(domainExtendEntity, DomainExtendDto.class));
+        Page<DomainExtendEntity> domainExtendEntities = domainExtendRepository
+                .findAvailableDomainExtend(
+                        domainOnlyName,
+                        pageable
+                );
+        return domainExtendEntities.map(domainExtendEntity -> modelMapper.map(
+                domainExtendEntity,
+                DomainExtendDto.class)
+        );
+    }
+
+    public DomainPriceQuery getPrice(Long domainExtendId, Integer period) {
+        return domainExtendRepository.getPrice(domainExtendId, period);
     }
 }

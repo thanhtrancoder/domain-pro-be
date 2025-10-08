@@ -6,6 +6,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import thanhtrancoder.domain_pro_be.common.utils.RegexUtils;
 import thanhtrancoder.domain_pro_be.module.account.AccountEntity;
 import thanhtrancoder.domain_pro_be.module.account.AccountService;
 import thanhtrancoder.domain_pro_be.security.auth.dto.LoginReq;
@@ -24,16 +25,21 @@ public class AuthService {
         if (account == null) {
             throw new CustomException("Sai tên tài khoản hoặc mật khẩu");
         }
-        if(!passwordEncoder.matches(loginReq.getPassword(), account.getPassword())) {
+        if (!passwordEncoder.matches(loginReq.getPassword(), account.getPassword())) {
             throw new CustomException("Sai tên tài khoản hoặc mật khẩu");
         }
-        if(account.getPassword() == null) {
+        if (account.getPassword() == null) {
             throw new CustomException("Sai tên tài khoản hoặc mật khẩu");
         }
         return account;
     }
 
     public void register(RegisterReq registerReq) {
+        if (registerReq.getEmail() == null
+                || registerReq.getEmail().trim().isEmpty()
+                || !RegexUtils.EMAIL_REGEX.matcher(registerReq.getEmail().trim()).matches()) {
+            throw new CustomException("Email không hợp lệ.");
+        }
         if (!registerReq.getPassword().equals(registerReq.getConfirmPassword())) {
             throw new CustomException("Mật khẩu không khớp");
         }

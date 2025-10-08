@@ -28,7 +28,7 @@ public class VoucherController {
             @RequestParam String code,
             @RequestParam Long amount
     ) {
-        VoucherApplyRes voucherApplyRes = voucherService.applyVoucher(code, amount, authService.getCurrentAccountId());
+        VoucherApplyRes voucherApplyRes = voucherService.applyVoucher(code, amount);
         return res.success("Áp dụng voucher thành công.", voucherApplyRes);
     }
 }

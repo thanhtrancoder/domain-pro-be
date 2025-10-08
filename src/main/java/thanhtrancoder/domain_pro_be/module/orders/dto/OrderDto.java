@@ -16,6 +16,7 @@ public class OrderDto {
     private String province;
     private String address;
     private Long paymentMethodId;
+    private String paymentMethodName;
     private String discountCode;
     private Long discountPrice;
     private Long totalPrice;

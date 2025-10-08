@@ -18,4 +18,5 @@ public class CartDto {
     private String domainExtend;
     private BigDecimal price;
     private BigDecimal discountPrice;
+    private Boolean isAvailable;
 }

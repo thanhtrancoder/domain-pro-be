@@ -5,7 +5,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import thanhtrancoder.domain_pro_be.module.cart.dto.CartItemQuery;
-import thanhtrancoder.domain_pro_be.module.cart.dto.CartPriceQuery;
 
 public interface CartRepository extends JpaRepository<CartEntity, Long> {
     CartEntity findOneByAccountIdAndDomainNameAndDomainExtendIdAndIsDeleted(
@@ -46,48 +45,26 @@ public interface CartRepository extends JpaRepository<CartEntity, Long> {
                             "AND c.period >= dp.number_of_year " +
                         "ORDER BY closest_year ASC " +
                         "LIMIT 1 " +
-                    ") AS discount_price_table) " +
-                "AS discount_price " +
+                    ") AS discount_price_table " +
+                ") AS discount_price , " +
+                "CASE " +
+                    "WHEN dn.domain_name_id IS NULL THEN TRUE " +
+                    "ELSE FALSE " +
+                "END AS is_available " +
             "FROM cart c " +
-            "JOIN domain_extend de ON c.domain_extend_id = de.domain_extend_id " +
+                "JOIN domain_extend de ON de.domain_extend_id = c.domain_extend_id " +
+                "LEFT JOIN domain_name dn " +
+                    "ON dn.domain_extend_id = de.domain_extend_id " +
+                    "AND dn.is_deleted = 0 " +
+                    "AND dn.domain_name = c.domain_name " +
+                    "AND DATE(dn.register_at) <= CURDATE() " +
+                    "AND DATE(dn.expires_at) >= CURDATE() " +
             "WHERE " +
                 "c.account_id = :accountId " +
-                "AND c.is_deleted = 0")
+                "AND c.is_deleted = 0 " +
+                "AND de.is_deleted = 0")
     Page<CartItemQuery> getAllByAccount(Long accountId, Pageable pageable);
     // @formatter:on
 
     CartEntity findOneByCartIdAndAccountIdAndIsDeleted(Long cartId, Long accountId, Boolean isDeleted);
-
-    /*
-    FROM domain_extend -> get name, get base_price
-        period * base_price -> price
-    FROM discount_price(domain_extend_id) -> min(period - number_of_year) -> discount
-    price * (1 - discount) -> discount_price
-    */
-    // @formatter:off
-    @Query(nativeQuery = true, value = "" +
-            "SELECT " +
-                "de.name AS domain_extend, " +
-                "de.base_price * :period AS price, " +
-                "de.base_price * :period * ( " +
-                    "SELECT 1 - discount_price_table.discount " +
-                    "FROM ( " +
-                        "SELECT " +
-                            "dp.discount, " +
-                            "dp.number_of_year, " +
-                            "(:period - dp.number_of_year) AS closest_year " +
-                        "FROM discount_price dp " +
-                        "WHERE " +
-                            "dp.is_deleted = 0 " +
-                            "AND dp.domain_extend_id = :domainExtendId " +
-                            "AND :period >= dp.number_of_year " +
-                        "ORDER BY closest_year ASC " +
-                        "LIMIT 1" +
-                    ") AS discount_price_table " +
-                ") AS discount_price " +
-            "FROM domain_extend de " +
-            "WHERE de.domain_extend_id = :domainExtendId " +
-                "AND de.is_deleted = 0")
-    CartPriceQuery getCartPrice(Long domainExtendId, Integer period);
-    // @formatter:on
 }

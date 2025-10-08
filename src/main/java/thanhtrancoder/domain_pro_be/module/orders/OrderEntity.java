@@ -38,6 +38,9 @@ public class OrderEntity extends BaseEntity {
     @Column(name = "payment_method_id", nullable = false)
     private Long paymentMethodId;
 
+    @Column(name = "payment_method_name", nullable = false)
+    private String paymentMethodName;
+
     @Column(name = "discount_code", length = 45)
     private String discountCode;
 

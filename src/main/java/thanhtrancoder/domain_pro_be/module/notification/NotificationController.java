@@ -1,4 +1,4 @@
-package thanhtrancoder.domain_pro_be.module.domainName;
+package thanhtrancoder.domain_pro_be.module.notification;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -11,25 +11,28 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import thanhtrancoder.domain_pro_be.common.entity.ResponseCustom;
 import thanhtrancoder.domain_pro_be.common.entity.ResponseCustomService;
-import thanhtrancoder.domain_pro_be.module.domainName.dto.DomainNameDashboardRes;
+import thanhtrancoder.domain_pro_be.module.notification.dto.NotificationDto;
 import thanhtrancoder.domain_pro_be.security.auth.AuthService;
 
 @RestController
-@RequestMapping("/api/domain-name")
-public class DomainNameController {
+@RequestMapping("/api/notification")
+public class NotificationController {
     @Autowired
-    private DomainNameService domainNameService;
+    private NotificationService notificationService;
     @Autowired
     private ResponseCustomService res;
     @Autowired
     private AuthService authService;
 
-    @GetMapping("/count")
+    @GetMapping("/all")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<ResponseCustom<DomainNameDashboardRes>> getCount() {
-        DomainNameDashboardRes domainNameDashboardRes = domainNameService.getCount(
-                authService.getCurrentAccountId()
+    public ResponseEntity<ResponseCustom<Page<NotificationDto>>> getAll(
+            @PageableDefault(size = 10) Pageable pageable
+    ) {
+        Page<NotificationDto> notificationDtoList = notificationService.getAll(
+                authService.getCurrentAccountId(),
+                pageable
         );
-        return res.success("Lấy số lượng tên miền thành công.", domainNameDashboardRes);
+        return res.success("Lấy danh sách thông báo thành công.", notificationDtoList);
     }
 }

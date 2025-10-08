@@ -1,8 +1,8 @@
-package thanhtrancoder.domain_pro_be.module.cart.dto;
+package thanhtrancoder.domain_pro_be.module.domainExtend.dto;
 
 import java.math.BigDecimal;
 
-public interface CartPriceQuery {
+public interface DomainPriceQuery {
     String getDomainExtend();
 
     BigDecimal getPrice();

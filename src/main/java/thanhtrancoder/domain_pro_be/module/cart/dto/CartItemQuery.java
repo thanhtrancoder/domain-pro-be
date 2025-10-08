@@ -18,4 +18,6 @@ public interface CartItemQuery {
     BigDecimal getPrice();
 
     BigDecimal getDiscountPrice();
+
+    Integer getIsAvailable();
 }
