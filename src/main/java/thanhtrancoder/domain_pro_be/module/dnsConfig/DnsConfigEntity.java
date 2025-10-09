@@ -20,22 +20,16 @@ public class DnsConfigEntity extends BaseEntity {
     @Column(name = "domain_name_id", nullable = false)
     private Long domainNameId;
 
+    @Column(name = "host", nullable = false)
+    private String host;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false, length = 45)
     private DnsType type;
-
-    @Column(name = "domain", nullable = false)
-    private String domain;
 
     @Column(name = "value", nullable = false)
     private String value;
 
     @Column(name = "ttl", nullable = false)
     private Integer ttl;
-
-    private enum DnsType {
-        ipv4,
-        ipv6,
-        cname
-    }
 }

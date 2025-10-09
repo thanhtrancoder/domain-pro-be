@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authorization.AuthorizationDeniedException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import thanhtrancoder.domain_pro_be.common.entity.ResponseCustom;
@@ -45,6 +46,22 @@ public class GlobalExceptionHandler {
     ) {
         logger.error("Request error", exception);
         return res.badRequest("Nội dung yêu cầu không hợp lệ.");
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ResponseCustom<Object>> handleMissingServletRequestParameterException(
+            MissingServletRequestParameterException exception
+    ) {
+        logger.error("Request error", exception);
+        return res.badRequest("Nội dung yêu cầu không hợp lệ.");
+    }
+
+    @ExceptionHandler(ExternalException.class)
+    public ResponseEntity<ResponseCustom<Object>> handleExternalException(
+            ExternalException exception
+    ) {
+        logger.error(exception.getMessage() + ", data = {}", exception.getData(), exception);
+        return res.badRequest("Có lỗi xảy ra trong quá trình xử lý.");
     }
 
     @ExceptionHandler(Exception.class)

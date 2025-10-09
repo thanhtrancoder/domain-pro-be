@@ -5,8 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import thanhtrancoder.domain_pro_be.common.exceptions.CustomException;
+import thanhtrancoder.domain_pro_be.common.exceptions.QueryException;
 import thanhtrancoder.domain_pro_be.module.domainName.dto.DomainNameDashboardRes;
 import thanhtrancoder.domain_pro_be.module.domainName.dto.DomainNameDto;
+
+import java.time.LocalDateTime;
 
 @Service
 public class DomainNameService {
@@ -27,5 +31,75 @@ public class DomainNameService {
                 domainNameRepository.getCount(accountId),
                 DomainNameDashboardRes.class
         );
+    }
+
+    public Page<DomainNameDto> search(Long accountId, String keyword, Integer status, Pageable pageable) {
+        Page<DomainNameEntity> domainNameList = domainNameRepository.search(
+                accountId,
+                keyword,
+                status,
+                pageable
+        );
+
+        return domainNameList.map(domainNameEntity -> modelMapper.map(
+                domainNameEntity,
+                DomainNameDto.class
+        ));
+    }
+
+    public DomainNameDto update(Long accountId, DomainNameDto domainNameDto) {
+        DomainNameEntity domainNameEntity = domainNameRepository.
+                findOneByDomainNameIdAndAccountIdAndIsDeleted(
+                        domainNameDto.getDomainNameId(),
+                        accountId,
+                        false
+                );
+        if (domainNameEntity == null) {
+            throw new RuntimeException("Tên miền không tồn tại.");
+        }
+        if (domainNameDto.getIsAutoRenewal() == domainNameEntity.getIsAutoRenewal()
+                && domainNameDto.getIsBlock() == domainNameEntity.getIsBlock()) {
+            throw new CustomException("Tên miền không thay đổi.");
+        }
+
+        try {
+            domainNameEntity.setIsAutoRenewal(domainNameDto.getIsAutoRenewal());
+            domainNameEntity.setIsBlock(domainNameDto.getIsBlock());
+            domainNameEntity.setUpdatedAt(LocalDateTime.now());
+            domainNameEntity.setUpdatedBy(accountId);
+            domainNameRepository.save(domainNameEntity);
+        } catch (Exception e) {
+            throw new QueryException("Có lỗi xảy ra khi cập nhật tên miền.", e);
+        }
+
+        return modelMapper.map(
+                domainNameEntity,
+                DomainNameDto.class
+        );
+    }
+
+    public DomainNameDto getDetail(Long accountId, Long domainNameId) {
+        DomainNameEntity domainNameEntity = domainNameRepository.getDetail(
+                domainNameId,
+                accountId
+        );
+        if (domainNameEntity == null) {
+            throw new CustomException("Không tìm thấy thông tin tên miền.");
+        }
+
+        return modelMapper.map(
+                domainNameEntity,
+                DomainNameDto.class
+        );
+    }
+
+    public void checkExists(Long accountId, Long domainNameId) {
+        if (!domainNameRepository.existsByDomainNameIdAndAccountIdAndIsDeleted(
+                domainNameId,
+                accountId,
+                false
+        )) {
+            throw new CustomException("Không tìm thấy thông tin tên miền.");
+        }
     }
 }

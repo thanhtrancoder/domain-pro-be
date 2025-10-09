@@ -22,6 +22,9 @@ public class DomainNameEntity extends BaseEntity {
     @Column(name = "domain_name", nullable = false)
     private String domainName;
 
+    @Column(name = "domain_extend", nullable = false)
+    private String domainExtend;
+
     @Column(name = "domain_extend_id", nullable = false)
     private Long domainExtendId;
 

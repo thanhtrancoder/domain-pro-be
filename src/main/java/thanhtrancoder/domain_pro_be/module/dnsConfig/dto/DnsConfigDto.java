@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 public class DnsConfigDto {
     private Long dnsConfigId;
     private Long domainNameId;
+    private String host;
     private String type; // mapped from enum in entity
-    private String domain;
     private String value;
     private Integer ttl;
 }

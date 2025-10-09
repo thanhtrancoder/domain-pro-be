@@ -41,6 +41,14 @@ public class ResponseCustomService {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
+    public <T> ResponseEntity<ResponseCustom<T>> badGateway(String message) {
+        ResponseCustom<T> response = new ResponseCustom<>();
+        response.setTimestamp(LocalDateTime.now());
+        response.setStatus(HttpStatus.BAD_GATEWAY.value());
+        response.setMessage(message);
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(response);
+    }
+
     public <T> ResponseEntity<ResponseCustom<T>> error(String message) {
         ResponseCustom<T> response = new ResponseCustom<>();
         response.setTimestamp(LocalDateTime.now());

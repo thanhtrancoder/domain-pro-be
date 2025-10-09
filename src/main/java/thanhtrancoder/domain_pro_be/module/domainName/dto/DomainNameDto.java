@@ -3,6 +3,7 @@ package thanhtrancoder.domain_pro_be.module.domainName.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 
 @Data
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 public class DomainNameDto {
     private Long domainNameId;
     private String domainName;
+    private String domainExtend;
     private Long domainExtendId;
     private Boolean isAutoRenewal;
     private LocalDateTime registerAt;

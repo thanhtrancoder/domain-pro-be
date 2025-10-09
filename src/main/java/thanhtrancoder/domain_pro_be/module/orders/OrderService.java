@@ -9,11 +9,10 @@ import org.springframework.transaction.annotation.Transactional;
 import thanhtrancoder.domain_pro_be.common.exceptions.CustomException;
 import thanhtrancoder.domain_pro_be.common.exceptions.QueryException;
 import thanhtrancoder.domain_pro_be.common.utils.RegexUtils;
-import thanhtrancoder.domain_pro_be.common.utils.StatusUtils;
+import thanhtrancoder.domain_pro_be.common.utils.ConstantValue;
 import thanhtrancoder.domain_pro_be.module.cart.CartService;
 import thanhtrancoder.domain_pro_be.module.cart.dto.CartDto;
 import thanhtrancoder.domain_pro_be.module.domainExtend.DomainExtendService;
-import thanhtrancoder.domain_pro_be.module.domainExtend.dto.DomainPriceQuery;
 import thanhtrancoder.domain_pro_be.module.orderItem.OrderItemEntity;
 import thanhtrancoder.domain_pro_be.module.orderItem.OrderItemService;
 import thanhtrancoder.domain_pro_be.module.orders.dto.OrderCreateRes;
@@ -65,7 +64,7 @@ public class OrderService {
             // create temp order
             OrderEntity order = modelMapper.map(orderDto, OrderEntity.class);
             order.setAccountId(accountId);
-            order.setStatus(StatusUtils.ORDER_PENDING);
+            order.setStatus(ConstantValue.ORDER_PENDING);
             order.setTotalPrice(0L);
             order.setPaymentMethodName(paymentMethodEntity.getName());
             order.setCreatedAt(LocalDateTime.now());

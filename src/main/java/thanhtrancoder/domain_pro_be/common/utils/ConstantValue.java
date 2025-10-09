@@ -1,6 +1,6 @@
 package thanhtrancoder.domain_pro_be.common.utils;
 
-public class StatusUtils {
+public class ConstantValue {
     public static final int ORDER_PENDING = 0;
     public static final int ORDER_PAID = 1;
 
