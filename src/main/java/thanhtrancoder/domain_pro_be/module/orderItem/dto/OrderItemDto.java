@@ -12,6 +12,7 @@ public class OrderItemDto {
     private Long orderId;
     private String domainName;
     private String domainExtend;
+    private Long domainExtendId;
     private Integer period;
     private Long price;
 }

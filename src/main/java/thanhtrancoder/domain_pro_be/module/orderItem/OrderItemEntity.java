@@ -26,6 +26,9 @@ public class OrderItemEntity extends BaseEntity {
     @Column(name = "domain_extend", nullable = false)
     private String domainExtend;
 
+    @Column(name = "domain_extend_id", nullable = false)
+    private Long domainExtendId;
+
     @Column(name = "period", nullable = false)
     private Integer period;
 

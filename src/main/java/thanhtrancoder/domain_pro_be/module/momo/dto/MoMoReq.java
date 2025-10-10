@@ -1,6 +1,5 @@
-package thanhtrancoder.domain_pro_be.module.paymentBills.dto;
+package thanhtrancoder.domain_pro_be.module.momo.dto;
 
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,9 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PaymentBillDto {
-    private Long paymentBillsId;
-    private Long paymentMethodId;
+public class MoMoReq {
     private String partnerCode;
     private String orderId;
     private String requestId;
@@ -23,4 +20,5 @@ public class PaymentBillDto {
     private String payType;
     private String responseTime;
     private String extraData;
+    private String signature;
 }

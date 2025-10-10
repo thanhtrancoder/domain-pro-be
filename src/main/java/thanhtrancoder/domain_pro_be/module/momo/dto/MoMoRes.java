@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CollectionLinkRequest {
-    private String orderId;
+public class MoMoRes {
+    private String payUrl;
+    private String shortLink;
 }

@@ -83,6 +83,7 @@ public class OrderService {
                 orderItem.setOrderId(order.getOrderId());
                 orderItem.setDomainName(cartDto.getDomainName());
                 orderItem.setDomainExtend(cartDto.getDomainExtend());
+                orderItem.setDomainExtendId(cartDto.getDomainExtendId());
                 orderItem.setPeriod(cartDto.getPeriod());
                 orderItem.setPrice(cartDto.getDiscountPrice().longValue());
                 orderItemService.createOrderItem(orderItem, accountId);
@@ -109,5 +110,41 @@ public class OrderService {
                 throw new QueryException("Có lỗi xảy ra khi tạo đơn hàng.", e);
             }
         }
+    }
+
+    @Transactional
+    public OrderDto updateOrderStatus(Long orderId, Integer status, Long accountId) {
+        OrderEntity order = orderRepository.findOneByOrderIdAndIsDeleted(orderId, false);
+        if (order == null) {
+            throw new CustomException("Không tìm thấy thông tin đơn hàng.");
+        }
+        if (status != ConstantValue.ORDER_PAID) {
+            throw new CustomException("Trạng thái đơn hàng không hợp lệ");
+        }
+        if (order.getStatus() == ConstantValue.ORDER_PAID) {
+            throw new CustomException("Không được phép cập nhật trạng thái đơn hàng này.");
+        }
+
+        try {
+            order.setStatus(status);
+            order.setUpdatedAt(LocalDateTime.now());
+            order.setUpdatedBy(accountId);
+            orderRepository.save(order);
+            return modelMapper.map(order, OrderDto.class);
+        } catch (Exception e) {
+            throw new QueryException("Có lỗi xảy ra khi cập nhật trạng thái đơn hàng.", e);
+        }
+    }
+
+    public OrderDto getDetail(Long orderId, Long accountId) {
+        OrderEntity order = orderRepository.findOneByOrderIdAndAccountIdAndIsDeleted(
+                orderId,
+                accountId,
+                false
+        );
+        if (order == null) {
+            throw new CustomException("Không tìm thấy thông tin đơn hàng.");
+        }
+        return modelMapper.map(order, OrderDto.class);
     }
 }

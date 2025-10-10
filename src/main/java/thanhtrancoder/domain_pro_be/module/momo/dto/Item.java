@@ -10,7 +10,9 @@ import lombok.NoArgsConstructor;
 public class Item {
     private String id;
     private String name;
-    private int quantity;
-    private long price;
-    private String imageUrl;
+    private String description;
+    private Long price;
+    private String currency;
+    private Integer quantity;
+    private Long totalPrice;
 }

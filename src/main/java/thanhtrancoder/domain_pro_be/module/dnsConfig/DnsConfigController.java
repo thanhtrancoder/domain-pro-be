@@ -47,4 +47,25 @@ public class DnsConfigController {
         );
         return res.success("Tạo cấu hình DNS thành công.", dnsConfigCreate);
     }
+
+    // update
+    @PutMapping("/update")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<ResponseCustom<DnsConfigDto>> update(
+            @RequestBody DnsConfigDto dnsConfigDto
+    ) {
+        DnsConfigDto dnsConfigUpdate = dnsConfigService.update(
+                authService.getCurrentAccountId(),
+                dnsConfigDto
+        );
+        return res.success("Cập nhật cấu hình DNS thành công.", dnsConfigUpdate);
+    }
+
+    // delete
+    @DeleteMapping("/delete/{dnsConfigId}")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<ResponseCustom<Object>> delete(@PathVariable Long dnsConfigId) {
+        dnsConfigService.delete(authService.getCurrentAccountId(), dnsConfigId);
+        return res.success("Xóa cấu hình DNS thành công.", null);
+    }
 }

@@ -17,5 +17,4 @@ public class CollectionLinkResponse {
     private int resultCode;
     private String payUrl;
     private String shortLink;
-    private String signature;
 }

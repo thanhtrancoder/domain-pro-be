@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import thanhtrancoder.domain_pro_be.common.exceptions.CustomException;
 import thanhtrancoder.domain_pro_be.common.exceptions.QueryException;
 import thanhtrancoder.domain_pro_be.module.domainName.dto.DomainNameDashboardRes;
@@ -47,6 +48,7 @@ public class DomainNameService {
         ));
     }
 
+    @Transactional
     public DomainNameDto update(Long accountId, DomainNameDto domainNameDto) {
         DomainNameEntity domainNameEntity = domainNameRepository.
                 findOneByDomainNameIdAndAccountIdAndIsDeleted(
@@ -100,6 +102,23 @@ public class DomainNameService {
                 false
         )) {
             throw new CustomException("Không tìm thấy thông tin tên miền.");
+        }
+    }
+
+    @Transactional
+    public void create(DomainNameDto domainNameDto, Long accountId) {
+        try {
+            DomainNameEntity domainNameEntity = modelMapper.map(
+                    domainNameDto,
+                    DomainNameEntity.class
+            );
+            domainNameEntity.setAccountId(accountId);
+            domainNameEntity.setCreatedAt(LocalDateTime.now());
+            domainNameEntity.setCreatedBy(accountId);
+            domainNameEntity.setIsDeleted(false);
+            domainNameRepository.save(domainNameEntity);
+        } catch (Exception e) {
+            throw new QueryException("Có lỗi xảy ra khi tạo tên miền.", e);
         }
     }
 }

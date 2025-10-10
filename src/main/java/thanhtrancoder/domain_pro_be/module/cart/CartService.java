@@ -118,4 +118,14 @@ public class CartService {
             throw new QueryException("Có lỗi xảy ra khi xóa domain khỏi giỏ hàng.", e);
         }
     }
+
+    @Transactional
+    public void deleteCartItem(Long accountId) {
+        try {
+            cartRepository.deleteCartItemByAccount(accountId);
+        } catch (Exception e) {
+            throw new QueryException("Có lỗi xảy ra khi làm mới giỏ hàng.", e);
+        }
+
+    }
 }

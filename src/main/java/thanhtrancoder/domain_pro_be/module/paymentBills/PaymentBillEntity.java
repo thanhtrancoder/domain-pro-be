@@ -18,7 +18,7 @@ public class PaymentBillEntity extends BaseEntity {
     private Long paymentBillsId;
 
     @Column(name = "payment_method_id")
-    private String paymentMethodId;
+    private Long paymentMethodId;
 
     @Column(name = "partner_code", nullable = false)
     private String partnerCode;
@@ -55,7 +55,4 @@ public class PaymentBillEntity extends BaseEntity {
 
     @Column(name = "extra_data")
     private String extraData;
-
-    @Column(name = "signature")
-    private String signatureMoMo;
 }

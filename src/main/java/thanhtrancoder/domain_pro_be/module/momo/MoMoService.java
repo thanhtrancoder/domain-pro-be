@@ -3,22 +3,35 @@ package thanhtrancoder.domain_pro_be.module.momo;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import thanhtrancoder.domain_pro_be.common.exceptions.CustomException;
 import thanhtrancoder.domain_pro_be.common.exceptions.ExternalException;
-import thanhtrancoder.domain_pro_be.module.momo.dto.CollectionLinkDto;
-import thanhtrancoder.domain_pro_be.module.momo.dto.CollectionLinkRequest;
-import thanhtrancoder.domain_pro_be.module.momo.dto.CollectionLinkResponse;
+import thanhtrancoder.domain_pro_be.common.utils.ConstantValue;
+import thanhtrancoder.domain_pro_be.module.cart.CartService;
+import thanhtrancoder.domain_pro_be.module.domainName.DomainNameService;
+import thanhtrancoder.domain_pro_be.module.domainName.dto.DomainNameDto;
+import thanhtrancoder.domain_pro_be.module.momo.dto.*;
+import thanhtrancoder.domain_pro_be.module.orderItem.OrderItemService;
+import thanhtrancoder.domain_pro_be.module.orderItem.dto.OrderItemDto;
+import thanhtrancoder.domain_pro_be.module.orders.OrderService;
+import thanhtrancoder.domain_pro_be.module.orders.dto.OrderDto;
+import thanhtrancoder.domain_pro_be.module.paymentBills.PaymentBillService;
+import thanhtrancoder.domain_pro_be.module.paymentBills.dto.PaymentBillDto;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -27,6 +40,16 @@ public class MoMoService {
     private RestTemplate restTemplate;
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private PaymentBillService paymentBillService;
+    @Autowired
+    private OrderService orderService;
+    @Autowired
+    private DomainNameService domainNameService;
+    @Autowired
+    private OrderItemService orderItemService;
+    @Autowired
+    private CartService cartService;
 
     @Value("${dev.momo.endpoint}")
     private String endpoint;
@@ -43,16 +66,53 @@ public class MoMoService {
     @Value("${dev.momo.ipn-url}")
     private String ipnUrl;
 
-    public CollectionLinkResponse createCollectionLink(CollectionLinkRequest req) {
+    public MoMoRes createCollectionLink(CollectionLinkRequest req, Long accountId) {
+        OrderDto orderDto = orderService.getDetail(Long.valueOf(req.getOrderId()), accountId);
+        if (orderDto.getStatus() == ConstantValue.ORDER_PAID) {
+            throw new CustomException("Đơn hàng đã được thanh toán.");
+        }
+
+        // create user info
+        UserInfo userInfo = new UserInfo();
+        userInfo.setName(orderDto.getFullname());
+        userInfo.setPhoneNumber(orderDto.getPhone());
+        userInfo.setEmail(orderDto.getEmail());
+
+        // create item
+        List<Item> items = new ArrayList<>();
+        Page<OrderItemDto> orderItemList = orderItemService.getAllByOrderId(
+                orderDto.getOrderId(),
+                Pageable.unpaged()
+        );
+        int idIndex = 1;
+        for (OrderItemDto orderItemDto : orderItemList) {
+            Item item = new Item();
+            item.setId(String.valueOf(idIndex));
+            item.setName("Tên miền:" + orderItemDto.getDomainName() + orderItemDto.getDomainExtend());
+            item.setDescription("Thời hạn: " + orderItemDto.getPeriod() + " năm");
+            item.setPrice(orderItemDto.getPrice());
+            item.setCurrency("VND");
+            item.setQuantity(1);
+            item.setTotalPrice(orderItemDto.getPrice());
+
+            items.add(item);
+            idIndex++;
+        }
+
+        // create requestId
         String requestUrl = endpoint + "/create";
         String requestId = UUID.randomUUID().toString();
 
         CollectionLinkDto collectionLinkDto = modelMapper.map(req, CollectionLinkDto.class);
         collectionLinkDto.setPartnerCode(partnerCode);
         collectionLinkDto.setStoreId(storeId);
+        collectionLinkDto.setAmount(orderDto.getTotalPrice());
+        collectionLinkDto.setOrderInfo("DomainPro - Thanh toán đơn hàng");
         collectionLinkDto.setRedirectUrl(redirectUrl);
         collectionLinkDto.setIpnUrl(ipnUrl);
         collectionLinkDto.setRequestId(requestId);
+        collectionLinkDto.setItems(items);
+        collectionLinkDto.setUserInfo(userInfo);
         collectionLinkDto.setRequestType("payWithMethod");
 
         // Tạo extraData nếu cần (ví dụ base64 của JSON)
@@ -86,48 +146,88 @@ public class MoMoService {
             throw new ExternalException("Momo error", resp.getBody());
         }
 
-        return resp.getBody();
+        MoMoRes moMoRes = new MoMoRes();
+        moMoRes.setPayUrl(resp.getBody().getPayUrl());
+        moMoRes.setShortLink(resp.getBody().getShortLink());
+
+        return moMoRes;
     }
 
+    @Transactional
+    public void processPayment(MoMoReq moMoReq) {
+        // Save into paymentBills
+        PaymentBillDto paymentBillDto = modelMapper.map(moMoReq, PaymentBillDto.class);
+        paymentBillDto.setPaymentMethodId(1L);
+        paymentBillService.create(paymentBillDto, 0L);
 
-    public void handleIpn(Map<String, Object> ipnPayload) {
-        if (!validateSignature(ipnPayload)) {
+        // Update order
+        OrderDto orderDto = orderService.updateOrderStatus(
+                Long.valueOf(paymentBillDto.getOrderId()),
+                ConstantValue.ORDER_PAID,
+                0L
+        );
+
+        // Create domainName
+        Page<OrderItemDto> orderItemList = orderItemService.getAllByOrderId(
+                Long.valueOf(paymentBillDto.getOrderId()),
+                Pageable.unpaged()
+        );
+        orderItemList.forEach(orderItem -> {
+            DomainNameDto domainNameDto = new DomainNameDto();
+            domainNameDto.setDomainName(orderItem.getDomainName());
+            domainNameDto.setDomainExtend(orderItem.getDomainExtend());
+            domainNameDto.setDomainExtendId(orderItem.getDomainExtendId());
+            domainNameDto.setIsAutoRenewal(false);
+            domainNameDto.setRegisterAt(LocalDateTime.now());
+            domainNameDto.setExpiresAt(LocalDateTime.now().plusYears(orderItem.getPeriod()));
+            domainNameDto.setIsBlock(false);
+            domainNameDto.setDnsProvider("CloudDNS");
+            domainNameDto.setAccountId(orderDto.getAccountId());
+
+            domainNameService.create(domainNameDto, orderDto.getAccountId());
+        });
+
+        // Delete cart item
+        cartService.deleteCartItem(orderDto.getAccountId());
+    }
+
+    public void handlePayment(MoMoReq moMoReq) {
+        if (!validateSignature(moMoReq)) {
             throw new CustomException("Xác thực thất bại.");
+        }
+        processPayment(moMoReq);
+    }
+
+    public void checkPayment(MoMoReq moMoReq) {
+        if (!validateSignature(moMoReq)) {
+            throw new CustomException("Xác thực thất bại.");
+        }
+
+        PaymentBillDto paymentBillDto = paymentBillService.getDetailByOrderId(moMoReq.getOrderId());
+        MoMoReq momoBill = modelMapper.map(paymentBillDto, MoMoReq.class);
+        if (!moMoReq.equals(momoBill)) {
+            processPayment(moMoReq);
         }
     }
 
-    private boolean validateSignature(Map<String, Object> payload) {
-        String partnerCode = asString(payload.get("partnerCode"));
-        String orderId = asString(payload.get("orderId"));
-        String requestId = asString(payload.get("requestId"));
-        String amount = asString(payload.get("amount"));
-        String orderInfo = asString(payload.get("orderInfo"));
-        String orderType = asString(payload.get("orderType"));
-        String transId = asString(payload.get("transId"));
-        String resultCode = asString(payload.get("resultCode"));
-        String message = asString(payload.get("message"));
-        String payType = asString(payload.get("payType"));
-        String responseTime = asString(payload.get("responseTime"));
-        String extraData = asString(payload.get("extraData"));
-        String signatureMoMo = asString(payload.get("signature"));
-
+    private boolean validateSignature(MoMoReq moMoReq) {
         String raw = "accessKey=" + accessKey +
-                "&amount=" + amount +
-                "&extraData=" + extraData +
-                "&message=" + message +
-                "&orderId=" + orderId +
-                "&orderInfo=" + orderInfo +
-                "&orderType=" + orderType +
-                "&partnerCode=" + partnerCode +
-                "&payType=" + payType +
-                "&requestId=" + requestId +
-                "&responseTime=" + responseTime +
-                "&resultCode=" + resultCode +
-                "&transId=" + transId;
+                "&amount=" + moMoReq.getAmount() +
+                "&extraData=" + moMoReq.getExtraData() +
+                "&message=" + moMoReq.getMessage() +
+                "&orderId=" + moMoReq.getOrderId() +
+                "&orderInfo=" + moMoReq.getOrderInfo() +
+                "&orderType=" + moMoReq.getOrderType() +
+                "&partnerCode=" + moMoReq.getPartnerCode() +
+                "&payType=" + moMoReq.getPayType() +
+                "&requestId=" + moMoReq.getRequestId() +
+                "&responseTime=" + moMoReq.getResponseTime() +
+                "&resultCode=" + moMoReq.getResultCode() +
+                "&transId=" + moMoReq.getTransId();
 
         String signatureCalc = hmacSha256(raw, secretKey);
 
-        return signatureCalc.equals(signatureMoMo);
+        return signatureCalc.equals(moMoReq.getSignature());
     }
 
     private String asString(Object obj) {

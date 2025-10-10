@@ -67,4 +67,17 @@ public interface CartRepository extends JpaRepository<CartEntity, Long> {
     // @formatter:on
 
     CartEntity findOneByCartIdAndAccountIdAndIsDeleted(Long cartId, Long accountId, Boolean isDeleted);
+
+    // @formatter:off
+    @Query(nativeQuery = true, value = "" +
+            "UPDATE cart " +
+            "SET " +
+                "is_deleted = 1, " +
+                "updated_at = NOW(), " +
+                "updated_by = 0 " +
+            "WHERE " +
+                "account_id = :accountId " +
+                "AND is_deleted = 0")
+    void deleteCartItemByAccount(Long accountId);
+    // @formatter:on
 }
