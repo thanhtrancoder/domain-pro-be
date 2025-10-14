@@ -28,4 +28,17 @@ public interface VoucherRepository extends JpaRepository<VoucherEntity, Long> {
                 "AND DATE(v.expires_at) >= CURDATE()")
     Long getDiscountPriceValue(String code, Long amount);
     // @formatter:on
+
+    // @formatter:off
+    @Query(nativeQuery = true, value = "" +
+            "SELECT * " +
+            "FROM vouchers v " +
+            "WHERE " +
+                "v.is_deleted = 0 " +
+                "AND DATE(v.start_at) <= CURDATE() " +
+                "AND DATE(v.expires_at) >= CURDATE() " +
+            "ORDER BY v.max_discount_amount DESC " +
+            "LIMIT 1")
+    VoucherEntity getDiscountest();
+    // @formatter:on
 }

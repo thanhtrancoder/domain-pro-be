@@ -31,4 +31,10 @@ public class VoucherController {
         VoucherApplyRes voucherApplyRes = voucherService.applyVoucher(code, amount);
         return res.success("Áp dụng voucher thành công.", voucherApplyRes);
     }
+
+    @GetMapping("/discountest")
+    public ResponseEntity<ResponseCustom<VoucherDto>> applyVoucher() {
+        VoucherDto voucherDto = voucherService.getDiscountest();
+        return res.success("Giảm giá tốt nhất.", voucherDto);
+    }
 }

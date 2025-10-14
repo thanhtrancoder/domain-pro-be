@@ -12,6 +12,8 @@ import thanhtrancoder.domain_pro_be.common.entity.ResponseCustomService;
 import thanhtrancoder.domain_pro_be.module.domainExtend.dto.DomainExtendDto;
 import thanhtrancoder.domain_pro_be.security.auth.AuthService;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/domain-extend")
 public class DomainExtendController {
@@ -40,5 +42,13 @@ public class DomainExtendController {
         Page<DomainExtendDto> result = domainExtendService.searchAvailableDomainExtend(domainName, pageable);
 
         return res.success("Tìm kiếm thành công.", result);
+    }
+
+    @GetMapping("popular")
+    public ResponseEntity<ResponseCustom<List<DomainExtendDto>>> search() {
+
+        List<DomainExtendDto> result = domainExtendService.getPopularDomainExtend();
+
+        return res.success("Lấy các domain extend phổ biến thành công.", result);
     }
 }

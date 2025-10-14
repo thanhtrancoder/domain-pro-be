@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import thanhtrancoder.domain_pro_be.common.exceptions.CustomException;
 import thanhtrancoder.domain_pro_be.module.vouchers.dto.VoucherApplyRes;
+import thanhtrancoder.domain_pro_be.module.vouchers.dto.VoucherDto;
 
 import java.time.LocalDate;
 
@@ -47,5 +48,10 @@ public class VoucherService {
         VoucherApplyRes res = new VoucherApplyRes();
         res.setDiscountPriceValue(discountPriceValue);
         return res;
+    }
+
+    public VoucherDto getDiscountest() {
+        VoucherEntity voucher = voucherRepository.getDiscountest();
+        return modelMapper.map(voucher, VoucherDto.class);
     }
 }

@@ -3,12 +3,12 @@ package thanhtrancoder.domain_pro_be.module.test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import thanhtrancoder.domain_pro_be.common.entity.ResponseCustom;
 import thanhtrancoder.domain_pro_be.common.entity.ResponseCustomService;
+import thanhtrancoder.domain_pro_be.common.exceptions.CustomException;
 import thanhtrancoder.domain_pro_be.module.account.AccountEntity;
+import thanhtrancoder.domain_pro_be.module.test.dto.TestDto;
 import thanhtrancoder.domain_pro_be.security.auth.AuthService;
 
 import java.time.LocalDateTime;
@@ -25,16 +25,33 @@ public class TestController {
 
     @GetMapping
     public ResponseEntity<ResponseCustom<TestEntity>> test() {
+        try {
+            Thread.sleep(3000);
+        } catch (Exception e) {
+            throw new CustomException("Có lỗi xảy ra khi giả lập tải.");
+        }
+
         TestEntity testEntity = new TestEntity();
         testEntity.setId(1L);
-        testEntity.setName("test");
+        testEntity.setName("Test 1 ok");
         testEntity.setCreatedAt(LocalDateTime.now());
         testEntity.setCreatedBy(1L);
         testEntity.setUpdatedAt(LocalDateTime.now());
         testEntity.setUpdatedBy(1L);
         testEntity.setIsDeleted(false);
 
-        return res.success("test ok", testEntity);
+        return res.success("test thành công.", testEntity);
+    }
+
+    @PostMapping("/post")
+    public ResponseEntity<ResponseCustom<TestDto>> testPost(@RequestBody TestDto testDto) {
+        try {
+            Thread.sleep(3000);
+        } catch (Exception e) {
+            throw new CustomException("Có lỗi xảy ra khi giả lập tải.");
+        }
+
+        return res.success("test thành công.", testDto);
     }
 
     @GetMapping("/user")

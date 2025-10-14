@@ -12,6 +12,8 @@ import thanhtrancoder.domain_pro_be.module.domainExtend.dto.DomainExtendDto;
 import thanhtrancoder.domain_pro_be.module.domainExtend.dto.DomainPriceQuery;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class DomainExtendService {
@@ -61,5 +63,13 @@ public class DomainExtendService {
 
     public DomainPriceQuery getPrice(Long domainExtendId, Integer period) {
         return domainExtendRepository.getPrice(domainExtendId, period);
+    }
+
+    public List<DomainExtendDto> getPopularDomainExtend() {
+        List<DomainExtendEntity> query = domainExtendRepository.getPopularDomainExtend();
+        return query.stream().map(domainExtendEntity -> modelMapper.map(
+                domainExtendEntity,
+                DomainExtendDto.class)
+        ).collect(Collectors.toList());
     }
 }

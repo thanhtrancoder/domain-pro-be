@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import thanhtrancoder.domain_pro_be.module.domainExtend.dto.DomainPriceQuery;
 
+import java.util.List;
+
 public interface DomainExtendRepository extends JpaRepository<DomainExtendEntity, Long> {
     Boolean existsByNameAndIsDeleted(String name, Boolean isDeleted);
 
@@ -54,5 +56,29 @@ public interface DomainExtendRepository extends JpaRepository<DomainExtendEntity
                 "de.domain_extend_id = :domainExtendId " +
                 "AND de.is_deleted = 0")
     DomainPriceQuery getPrice(Long domainExtendId, Integer period);
+    // @formatter:on
+
+    // @formatter:off
+    @Query(nativeQuery = true, value = "" +
+            "SELECT " +
+                "de.*, " +
+                "IFNULL(dn_count.number_of_name, 0) AS number_of_name " +
+            "FROM domain_extend de " +
+                "LEFT JOIN " +
+                    "( " +
+                        "SELECT " +
+                            "dn.domain_extend_id, " +
+                            "COUNT(*) AS number_of_name " +
+                        "FROM domain_name dn " +
+                        "WHERE " +
+                            "dn.is_deleted = 0 " +
+                            "AND DATE(dn.register_at) <= CURDATE() " +
+                            "AND DATE(dn.expires_at) >= CURDATE() " +
+                        "GROUP BY dn.domain_extend_id " +
+                    ") dn_count ON dn_count.domain_extend_id = de.domain_extend_id " +
+            "WHERE de.is_deleted = 0 " +
+            "ORDER BY dn_count.number_of_name DESC " +
+            "LIMIT 6")
+    List<DomainExtendEntity> getPopularDomainExtend();
     // @formatter:on
 }

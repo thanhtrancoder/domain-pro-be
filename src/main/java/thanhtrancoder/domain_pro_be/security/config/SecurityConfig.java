@@ -13,6 +13,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import thanhtrancoder.domain_pro_be.security.auth.CustomAccessDeniedHandler;
 import thanhtrancoder.domain_pro_be.security.auth.CustomAuthenticationEntryPoint;
 import thanhtrancoder.domain_pro_be.security.auth.CustomUserDetailsService;
@@ -20,12 +23,16 @@ import thanhtrancoder.domain_pro_be.security.jwt.JwtRequestFilter;
 import thanhtrancoder.domain_pro_be.security.oauth2.CustomOidcUserService;
 import thanhtrancoder.domain_pro_be.security.oauth2.OAuth2SuccessHandler;
 
+import java.util.List;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
     @Value("${oauth2.login.success-url}")
     private String successUrl;
+    @Value("${frontend.origin}")
+    private String frontendOrigin;
 
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
@@ -50,10 +57,25 @@ public class SecurityConfig {
     }
 
     @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of(frontendOrigin));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+        config.setExposedHeaders(List.of("Authorization"));
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http,
                                            CustomAuthenticationEntryPoint customAuthenticationEntryPoint,
                                            CustomAccessDeniedHandler customAccessDeniedHandler) throws Exception {
         http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .anyRequest().permitAll()
