@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import thanhtrancoder.domain_pro_be.common.exceptions.CustomException;
 import thanhtrancoder.domain_pro_be.common.exceptions.QueryException;
+import thanhtrancoder.domain_pro_be.common.utils.StringUtils;
 import thanhtrancoder.domain_pro_be.module.domainExtend.dto.DomainExtendDto;
 import thanhtrancoder.domain_pro_be.module.domainExtend.dto.DomainPriceQuery;
 
@@ -45,7 +46,8 @@ public class DomainExtendService {
     }
 
     public Page<DomainExtendDto> searchAvailableDomainExtend(String domainName, Pageable pageable) {
-        String[] domainNameSplit = domainName.trim().split("\\.");
+        String domainNameWithoutAccent = StringUtils.removeAccent(domainName);
+        String[] domainNameSplit = domainNameWithoutAccent.trim().split("\\.");
         String domainOnlyName = domainNameSplit[0];
         if (domainNameSplit.length > 1) {
             domainOnlyName = domainNameSplit[domainNameSplit.length - 2];
