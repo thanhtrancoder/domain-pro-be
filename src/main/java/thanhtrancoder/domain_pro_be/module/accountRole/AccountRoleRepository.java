@@ -16,4 +16,6 @@ public interface AccountRoleRepository extends JpaRepository<AccountRoleEntity, 
                         "AND ar.account_id = :accountId")
     List<String> findByAccountId(Long accountId);
     // @formatter:on
+
+    List<AccountRoleEntity> findAllByAccountIdAndIsDeleted(Long accountId, Boolean isDeleted);
 }

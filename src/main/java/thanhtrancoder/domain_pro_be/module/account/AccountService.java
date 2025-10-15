@@ -1,13 +1,19 @@
 package thanhtrancoder.domain_pro_be.module.account;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import thanhtrancoder.domain_pro_be.common.exceptions.CustomException;
 import thanhtrancoder.domain_pro_be.common.exceptions.QueryException;
+import thanhtrancoder.domain_pro_be.module.account.dto.AccountProfileRes;
 import thanhtrancoder.domain_pro_be.module.accountRole.AccountRoleService;
+import thanhtrancoder.domain_pro_be.module.cart.CartService;
+import thanhtrancoder.domain_pro_be.module.cart.dto.CartDto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class AccountService {
@@ -15,6 +21,8 @@ public class AccountService {
     private AccountRepository accountRepository;
     @Autowired
     private AccountRoleService accountRoleService;
+    @Autowired
+    private CartService cartService;
 
     public AccountEntity getAccountByEmail(String email) {
         return accountRepository.findByEmail(email);
@@ -56,5 +64,28 @@ public class AccountService {
 
     public Boolean existsByGoogleId(String googleId) {
         return accountRepository.existsByGoogleId(googleId);
+    }
+
+    public AccountProfileRes getProfile(Long accountId) {
+        AccountEntity account = accountRepository.findOneByAccountIdAndIsDeleted(
+                accountId,
+                false
+        );
+        if (account == null) {
+            throw new CustomException("Tài khoản không tồn tại");
+        }
+
+        List<String> roles = accountRoleService.getRolesByAccountId(accountId);
+
+        Page<CartDto> cartList = cartService.getAll(accountId, Pageable.unpaged());
+
+        AccountProfileRes accountProfileRes = new AccountProfileRes();
+        accountProfileRes.setFullname(account.getFullname());
+        accountProfileRes.setEmail(account.getEmail());
+        accountProfileRes.setIsVerify(account.getIsVerify());
+        accountProfileRes.setRoles(roles);
+        accountProfileRes.setNumberCartItem((long) cartList.getContent().size());
+
+        return accountProfileRes;
     }
 }

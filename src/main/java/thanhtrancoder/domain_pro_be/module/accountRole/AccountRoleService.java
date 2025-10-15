@@ -14,9 +14,9 @@ public class AccountRoleService {
     @Autowired
     private AccountRoleRepository accountRoleRepository;
 
-    public List<String> getRolesByAccountId(Long accountId) {
-        return accountRoleRepository.findByAccountId(accountId);
-    }
+//    public List<String> getRolesByAccountId(Long accountId) {
+//        return accountRoleRepository.findByAccountId(accountId);
+//    }
 
     @Transactional
     public AccountRoleEntity insert(Long accountId, Long roleId, Long createdBy) {
@@ -31,5 +31,9 @@ public class AccountRoleService {
         } catch (Exception e) {
             throw new QueryException("có lỗi xảy ra khi thực hiện phân quyền cho tài khoản.", e);
         }
+    }
+
+    public List<String> getRolesByAccountId(Long accountId) {
+        return accountRoleRepository.findByAccountId(accountId);
     }
 }

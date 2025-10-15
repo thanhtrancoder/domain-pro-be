@@ -41,9 +41,21 @@ public class AuthController {
     }
 
     @PostMapping(value = "/register")
-    public ResponseEntity<ResponseCustom<Object>> register(@RequestBody RegisterReq registerReq) {
+    public ResponseEntity<ResponseCustom<LoginRes>> register(@RequestBody RegisterReq registerReq) {
         authService.register(registerReq);
 
-        return res.success("Đăng ký thành công.", null);
+        LoginReq loginReq = new LoginReq();
+        loginReq.setEmail(registerReq.getEmail());
+        loginReq.setPassword(registerReq.getPassword());
+        AccountEntity accountEntity = authService.login(loginReq);
+
+        String token = jwtUtil.generateToken(loginReq.getEmail());
+
+        LoginRes loginRes = new LoginRes();
+        loginRes.setToken(token);
+        loginRes.setFullname(accountEntity.getFullname());
+        loginRes.setEmail(accountEntity.getEmail());
+
+        return res.success("Đăng ký thành công.", loginRes);
     }
 }
