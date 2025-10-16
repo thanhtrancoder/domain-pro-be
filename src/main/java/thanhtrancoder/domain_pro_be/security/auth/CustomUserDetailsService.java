@@ -35,6 +35,11 @@ public class CustomUserDetailsService implements UserDetailsService {
             authorities.add(new SimpleGrantedAuthority("ROLE_" + role));
         }
 
-        return new User(account.getEmail(), account.getPassword(), authorities);
+        String password = "";
+        if (account.getPassword() != null) {
+            password = account.getPassword();
+        }
+
+        return new CustomUserDetails(account.getEmail(), authorities);
     }
 }

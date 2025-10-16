@@ -47,14 +47,16 @@ public class OAuth2Controller {
         if (!jwtUtil.validateToken(token)) {
             throw new CustomException("Phiên đăng nhập đã hết hạn.");
         }
-        String email = jwtUtil.extractEmail(token);
+        String id = jwtUtil.extractEmail(token);
 
-        String tokenNew = jwtUtil.generateToken(email);
-
-        AccountEntity account = accountService.getAccountByEmail(email);
+        AccountEntity account = accountService.getAccountByGoogleId(id);
         if (account.getIsDeleted() == true) {
             throw new CustomException("Tài khoản đã bị chặn.");
         }
+
+        String tokenNew = jwtUtil.generateToken(account.getEmail());
+
+        String email = jwtUtil.extractEmail(tokenNew);
 
         LoginRes loginRes = new LoginRes();
         loginRes.setToken(tokenNew);

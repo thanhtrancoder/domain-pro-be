@@ -12,4 +12,6 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Long> {
     Boolean existsByGoogleId(String googleId);
 
     AccountEntity findOneByAccountIdAndIsDeleted(Long accountId, Boolean isDeleted);
+
+    AccountEntity findOneByGoogleIdAndIsDeleted(String googleId, Boolean isDeleted);
 }

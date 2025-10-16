@@ -88,4 +88,8 @@ public class AccountService {
 
         return accountProfileRes;
     }
+
+    public AccountEntity getAccountByGoogleId(String googleId) {
+        return accountRepository.findOneByGoogleIdAndIsDeleted(googleId, false);
+    }
 }
