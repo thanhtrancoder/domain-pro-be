@@ -34,7 +34,7 @@ public class CartController {
     public ResponseEntity<ResponseCustom<Page<CartDto>>> getAll(
             @PageableDefault(size = 10) Pageable pageable
     ) {
-        Page<CartDto> cartList = cartService.getAll(authService.getCurrentAccountId(), pageable);
+        Page<CartDto> cartList = cartService.getAll(authService.getCurrentAccountId(), Pageable.unpaged());
         return res.success("Lấy danh sách sản phẩm trong giỏ hàng thành công.", cartList);
     }
 

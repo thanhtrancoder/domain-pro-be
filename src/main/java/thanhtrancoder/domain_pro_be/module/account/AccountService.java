@@ -35,7 +35,7 @@ public class AccountService {
     @Transactional
     public AccountEntity create(AccountEntity account) {
         if (accountRepository.existsByEmail(account.getEmail())) {
-            throw new CustomException("Email này đã tồn tại, vui lòng chọn email khác");
+            throw new CustomException("Email này đã tồn tại, vui lòng sử dụng email khác");
         }
 
         try {
