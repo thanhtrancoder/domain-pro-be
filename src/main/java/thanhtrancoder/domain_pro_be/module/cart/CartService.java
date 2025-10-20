@@ -93,7 +93,7 @@ public class CartService {
         );
         CartDto cartItem = modelMapper.map(cart, CartDto.class);
         cartItem.setDomainExtend(domainPriceQuery.getDomainExtend());
-        cartItem.setPrice(domainPriceQuery.getPrice());
+        cartItem.setBasePrice(domainPriceQuery.getBasePrice());
         cartItem.setDiscountPrice(domainPriceQuery.getDiscountPrice());
 
         return cartItem;

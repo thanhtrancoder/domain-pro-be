@@ -16,7 +16,7 @@ public class CartDto {
     private Long domainExtendId;
     private Integer period;
     private String domainExtend;
-    private BigDecimal price;
+    private BigDecimal basePrice;
     private BigDecimal discountPrice;
     private Boolean isAvailable;
 }

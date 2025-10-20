@@ -30,8 +30,8 @@ public interface CartRepository extends JpaRepository<CartEntity, Long> {
                 "c.domain_extend_id, " +
                 "c.period, " +
                 "de.name AS domain_extend, " +
-                "c.period * de.base_price AS price, " +
-                "c.period * de.base_price * ( " +
+                "de.base_price, " +
+                "de.base_price * ( " +
                     "SELECT (1 - discount_price_table.discount) " +
                     "FROM ( " +
                         "SELECT " +

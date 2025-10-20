@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 public interface DomainPriceQuery {
     String getDomainExtend();
 
-    BigDecimal getPrice();
+    BigDecimal getBasePrice();
 
     BigDecimal getDiscountPrice();
 }

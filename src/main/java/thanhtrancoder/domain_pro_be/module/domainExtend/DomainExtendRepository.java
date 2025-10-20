@@ -34,8 +34,8 @@ public interface DomainExtendRepository extends JpaRepository<DomainExtendEntity
     @Query(nativeQuery = true, value = "" +
             "SELECT " +
                 "de.name AS domain_extend, " +
-                "de.base_price * :period AS price, " +
-                "de.base_price * :period * ( " +
+                "de.base_price, " +
+                "de.base_price * ( " +
                     "SELECT 1 - discount_price_table.discount " +
                     "FROM ( " +
                         "SELECT " +

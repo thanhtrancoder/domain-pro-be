@@ -15,7 +15,7 @@ public interface CartItemQuery {
 
     String getDomainExtend();
 
-    BigDecimal getPrice();
+    BigDecimal getBasePrice();
 
     BigDecimal getDiscountPrice();
 
