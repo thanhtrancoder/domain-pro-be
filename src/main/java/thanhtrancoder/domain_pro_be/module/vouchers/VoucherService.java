@@ -3,7 +3,9 @@ package thanhtrancoder.domain_pro_be.module.vouchers;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import thanhtrancoder.domain_pro_be.common.exceptions.CustomException;
+import thanhtrancoder.domain_pro_be.common.exceptions.QueryException;
 import thanhtrancoder.domain_pro_be.module.vouchers.dto.VoucherApplyRes;
 import thanhtrancoder.domain_pro_be.module.vouchers.dto.VoucherDto;
 
@@ -53,5 +55,20 @@ public class VoucherService {
     public VoucherDto getDiscountest() {
         VoucherEntity voucher = voucherRepository.getDiscountest();
         return modelMapper.map(voucher, VoucherDto.class);
+    }
+
+    @Transactional
+    public void updateUsage(String code) {
+        VoucherEntity voucher = voucherRepository.findOneByCodeAndIsDeleted(code, false);
+        if (voucher == null) {
+            throw new CustomException("Không tìm thấy thông tin voucher.");
+        }
+        try {
+            voucher.setUsagePerUser(voucher.getUsagePerUser() + 1);
+            voucherRepository.save(voucher);
+        } catch (Exception e) {
+            throw new QueryException("Có lỗi xảy ra trong quá trình cập nhật voucher.", e);
+        }
+
     }
 }

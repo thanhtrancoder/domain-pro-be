@@ -22,6 +22,7 @@ import thanhtrancoder.domain_pro_be.module.paymentMethod.PaymentMethodService;
 import thanhtrancoder.domain_pro_be.module.vouchers.VoucherService;
 import thanhtrancoder.domain_pro_be.module.vouchers.dto.VoucherApplyRes;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Service
@@ -85,10 +86,11 @@ public class OrderService {
                 orderItem.setDomainExtend(cartDto.getDomainExtend());
                 orderItem.setDomainExtendId(cartDto.getDomainExtendId());
                 orderItem.setPeriod(cartDto.getPeriod());
-                orderItem.setPrice(cartDto.getDiscountPrice().longValue());
+                Long price = cartDto.getDiscountPrice().longValue() * cartDto.getPeriod();
+                orderItem.setPrice(price);
                 orderItemService.createOrderItem(orderItem, accountId);
 
-                amount += cartDto.getDiscountPrice().longValue();
+                amount += price;
             }
 
             order.setTotalPrice(amount);

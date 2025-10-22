@@ -3,6 +3,7 @@ package thanhtrancoder.domain_pro_be.module.cart;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import thanhtrancoder.domain_pro_be.module.cart.dto.CartItemQuery;
 
@@ -69,6 +70,7 @@ public interface CartRepository extends JpaRepository<CartEntity, Long> {
     CartEntity findOneByCartIdAndAccountIdAndIsDeleted(Long cartId, Long accountId, Boolean isDeleted);
 
     // @formatter:off
+    @Modifying
     @Query(nativeQuery = true, value = "" +
             "UPDATE cart " +
             "SET " +

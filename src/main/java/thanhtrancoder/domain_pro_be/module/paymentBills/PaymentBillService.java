@@ -49,4 +49,15 @@ public class PaymentBillService {
         }
         return modelMapper.map(paymentBillEntity, PaymentBillDto.class);
     }
+
+    public PaymentBillEntity adminGetDetailByOrderId(String orderId) {
+        PaymentBillEntity paymentBillEntity = paymentBillRepository.findOneByOrderIdAndIsDeleted(
+                orderId,
+                false
+        );
+        if (paymentBillEntity == null) {
+            throw new CustomException("Không tìm thấy thông tin hóa đơn thanh toán.");
+        }
+        return paymentBillEntity;
+    }
 }

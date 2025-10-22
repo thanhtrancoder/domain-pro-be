@@ -112,6 +112,7 @@ public class DomainNameService {
                     domainNameDto,
                     DomainNameEntity.class
             );
+            domainNameEntity.setStatus(1);
             domainNameEntity.setAccountId(accountId);
             domainNameEntity.setCreatedAt(LocalDateTime.now());
             domainNameEntity.setCreatedBy(accountId);

@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import thanhtrancoder.domain_pro_be.common.exceptions.CustomException;
 import thanhtrancoder.domain_pro_be.common.exceptions.ExternalException;
+import thanhtrancoder.domain_pro_be.common.exceptions.QueryException;
 import thanhtrancoder.domain_pro_be.common.utils.ConstantValue;
 import thanhtrancoder.domain_pro_be.module.cart.CartService;
 import thanhtrancoder.domain_pro_be.module.domainName.DomainNameService;
@@ -23,8 +24,10 @@ import thanhtrancoder.domain_pro_be.module.orderItem.OrderItemService;
 import thanhtrancoder.domain_pro_be.module.orderItem.dto.OrderItemDto;
 import thanhtrancoder.domain_pro_be.module.orders.OrderService;
 import thanhtrancoder.domain_pro_be.module.orders.dto.OrderDto;
+import thanhtrancoder.domain_pro_be.module.paymentBills.PaymentBillEntity;
 import thanhtrancoder.domain_pro_be.module.paymentBills.PaymentBillService;
 import thanhtrancoder.domain_pro_be.module.paymentBills.dto.PaymentBillDto;
+import thanhtrancoder.domain_pro_be.module.vouchers.VoucherService;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -50,6 +53,8 @@ public class MoMoService {
     private OrderItemService orderItemService;
     @Autowired
     private CartService cartService;
+    @Autowired
+    private VoucherService voucherService;
 
     @Value("${dev.momo.endpoint}")
     private String endpoint;
@@ -88,7 +93,11 @@ public class MoMoService {
         for (OrderItemDto orderItemDto : orderItemList) {
             Item item = new Item();
             item.setId(String.valueOf(idIndex));
-            item.setName("Tên miền:" + orderItemDto.getDomainName() + orderItemDto.getDomainExtend());
+            item.setName("Tên miền: "
+                    + orderItemDto.getDomainName()
+                    + orderItemDto.getDomainExtend()
+                    + " (" + orderItemDto.getPeriod() + " năm)"
+            );
             item.setDescription("Thời hạn: " + orderItemDto.getPeriod() + " năm");
             item.setPrice(orderItemDto.getPrice());
             item.setCurrency("VND");
@@ -155,40 +164,49 @@ public class MoMoService {
 
     @Transactional
     public void processPayment(MoMoReq moMoReq) {
-        // Save into paymentBills
-        PaymentBillDto paymentBillDto = modelMapper.map(moMoReq, PaymentBillDto.class);
-        paymentBillDto.setPaymentMethodId(1L);
-        paymentBillService.create(paymentBillDto, 0L);
+        try {
+            // Save into paymentBills
+            PaymentBillDto paymentBillDto = modelMapper.map(moMoReq, PaymentBillDto.class);
+            paymentBillDto.setPaymentMethodId(1L);
+            paymentBillService.create(paymentBillDto, 0L);
 
-        // Update order
-        OrderDto orderDto = orderService.updateOrderStatus(
-                Long.valueOf(paymentBillDto.getOrderId()),
-                ConstantValue.ORDER_PAID,
-                0L
-        );
+            // Update order
+            OrderDto orderDto = orderService.updateOrderStatus(
+                    Long.valueOf(paymentBillDto.getOrderId()),
+                    ConstantValue.ORDER_PAID,
+                    0L
+            );
 
-        // Create domainName
-        Page<OrderItemDto> orderItemList = orderItemService.getAllByOrderId(
-                Long.valueOf(paymentBillDto.getOrderId()),
-                Pageable.unpaged()
-        );
-        orderItemList.forEach(orderItem -> {
-            DomainNameDto domainNameDto = new DomainNameDto();
-            domainNameDto.setDomainName(orderItem.getDomainName());
-            domainNameDto.setDomainExtend(orderItem.getDomainExtend());
-            domainNameDto.setDomainExtendId(orderItem.getDomainExtendId());
-            domainNameDto.setIsAutoRenewal(false);
-            domainNameDto.setRegisterAt(LocalDateTime.now());
-            domainNameDto.setExpiresAt(LocalDateTime.now().plusYears(orderItem.getPeriod()));
-            domainNameDto.setIsBlock(false);
-            domainNameDto.setDnsProvider("CloudDNS");
-            domainNameDto.setAccountId(orderDto.getAccountId());
+            // Create domainName
+            Page<OrderItemDto> orderItemList = orderItemService.getAllByOrderId(
+                    Long.valueOf(paymentBillDto.getOrderId()),
+                    Pageable.unpaged()
+            );
+            orderItemList.forEach(orderItem -> {
+                DomainNameDto domainNameDto = new DomainNameDto();
+                domainNameDto.setDomainName(orderItem.getDomainName());
+                domainNameDto.setDomainExtend(orderItem.getDomainExtend());
+                domainNameDto.setDomainExtendId(orderItem.getDomainExtendId());
+                domainNameDto.setIsAutoRenewal(false);
+                domainNameDto.setRegisterAt(LocalDateTime.now());
+                domainNameDto.setExpiresAt(LocalDateTime.now().plusYears(orderItem.getPeriod()));
+                domainNameDto.setIsBlock(false);
+                domainNameDto.setDnsProvider("CloudDNS");
+                domainNameDto.setAccountId(orderDto.getAccountId());
 
-            domainNameService.create(domainNameDto, orderDto.getAccountId());
-        });
+                domainNameService.create(domainNameDto, orderDto.getAccountId());
+            });
 
-        // Delete cart item
-        cartService.deleteCartItem(orderDto.getAccountId());
+            // Delete cart item
+            cartService.deleteCartItem(orderDto.getAccountId());
+
+            // Update voucher
+            if (orderDto.getDiscountCode() != null && !orderDto.getDiscountCode().isEmpty()) {
+                voucherService.updateUsage(orderDto.getDiscountCode());
+            }
+        } catch (Exception e) {
+            throw new QueryException("Có lỗi xảy ra khi thanh toán", e);
+        }
     }
 
     public void handlePayment(MoMoReq moMoReq) {
@@ -198,16 +216,27 @@ public class MoMoService {
         processPayment(moMoReq);
     }
 
-    public void checkPayment(MoMoReq moMoReq) {
+    public CheckPaymentRes checkPayment(MoMoReq moMoReq) {
         if (!validateSignature(moMoReq)) {
             throw new CustomException("Xác thực thất bại.");
         }
 
-        PaymentBillDto paymentBillDto = paymentBillService.getDetailByOrderId(moMoReq.getOrderId());
-        MoMoReq momoBill = modelMapper.map(paymentBillDto, MoMoReq.class);
-        if (!moMoReq.equals(momoBill)) {
+        moMoReq.setSignature(null);
+        PaymentBillEntity paymentBillEntity = paymentBillService.adminGetDetailByOrderId(moMoReq.getOrderId());
+        try {
+            MoMoReq momoBill = modelMapper.map(paymentBillEntity, MoMoReq.class);
+            if (!moMoReq.equals(momoBill)) {
+                processPayment(moMoReq);
+            }
+        } catch (Exception e) {
             processPayment(moMoReq);
         }
+
+        CheckPaymentRes res = new CheckPaymentRes();
+        res.setOrderId(paymentBillEntity.getOrderId());
+        res.setAmount(Long.valueOf(paymentBillEntity.getAmount()));
+        res.setCreatedAt(paymentBillEntity.getCreatedAt());
+        return res;
     }
 
     private boolean validateSignature(MoMoReq moMoReq) {

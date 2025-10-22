@@ -6,6 +6,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import thanhtrancoder.domain_pro_be.common.entity.ResponseCustom;
 import thanhtrancoder.domain_pro_be.common.entity.ResponseCustomService;
+import thanhtrancoder.domain_pro_be.module.momo.dto.CheckPaymentRes;
 import thanhtrancoder.domain_pro_be.module.momo.dto.CollectionLinkRequest;
 import thanhtrancoder.domain_pro_be.module.momo.dto.MoMoReq;
 import thanhtrancoder.domain_pro_be.module.momo.dto.MoMoRes;
@@ -39,9 +40,9 @@ public class MoMoController {
         return ResponseEntity.ok("OK");
     }
 
-    @GetMapping("/check")
-    public ResponseEntity<ResponseCustom<Object>> redirectPage(@RequestBody MoMoReq moMoReq) {
-        momoService.checkPayment(moMoReq);
-        return res.success("Thanh toán thành công.", null);
+    @PostMapping("/check")
+    public ResponseEntity<ResponseCustom<CheckPaymentRes>> checkPayment(@RequestBody MoMoReq moMoReq) {
+        CheckPaymentRes payment = momoService.checkPayment(moMoReq);
+        return res.success("Thanh toán thành công.", payment);
     }
 }
