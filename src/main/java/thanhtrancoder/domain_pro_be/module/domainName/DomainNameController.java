@@ -3,6 +3,7 @@ package thanhtrancoder.domain_pro_be.module.domainName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -37,7 +38,7 @@ public class DomainNameController {
     public ResponseEntity<ResponseCustom<Page<DomainNameDto>>> search(
             @RequestParam(defaultValue = "") String keyword,
             @RequestParam(defaultValue = "0") Integer status,
-            @PageableDefault(size = 10) Pageable pageable
+            @PageableDefault(size = 10, sort = "expires_at", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         Page<DomainNameDto> domainList = domainNameService.search(
                 authService.getCurrentAccountId(),
