@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -16,4 +17,5 @@ public class AccountProfileRes {
     private String avatar;
     private List<String> roles;
     private Long numberCartItem;
+    private LocalDateTime createdAt;
 }

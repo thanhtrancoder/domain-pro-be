@@ -204,6 +204,8 @@ public class MoMoService {
             if (orderDto.getDiscountCode() != null && !orderDto.getDiscountCode().isEmpty()) {
                 voucherService.updateUsage(orderDto.getDiscountCode());
             }
+
+            // Create notification
         } catch (Exception e) {
             throw new QueryException("Có lỗi xảy ra khi thanh toán", e);
         }

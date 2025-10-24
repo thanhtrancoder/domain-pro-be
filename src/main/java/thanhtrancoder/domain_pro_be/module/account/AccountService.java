@@ -85,6 +85,7 @@ public class AccountService {
         accountProfileRes.setIsVerify(account.getIsVerify());
         accountProfileRes.setRoles(roles);
         accountProfileRes.setNumberCartItem((long) cartList.getContent().size());
+        accountProfileRes.setCreatedAt(account.getCreatedAt());
 
         return accountProfileRes;
     }
