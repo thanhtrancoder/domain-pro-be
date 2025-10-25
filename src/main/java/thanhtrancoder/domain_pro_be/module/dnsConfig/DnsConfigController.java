@@ -10,7 +10,10 @@ import org.springframework.web.bind.annotation.*;
 import thanhtrancoder.domain_pro_be.common.entity.ResponseCustom;
 import thanhtrancoder.domain_pro_be.common.entity.ResponseCustomService;
 import thanhtrancoder.domain_pro_be.module.dnsConfig.dto.DnsConfigDto;
+import thanhtrancoder.domain_pro_be.module.dnsConfig.dto.DnsConfigMatchReq;
 import thanhtrancoder.domain_pro_be.security.auth.AuthService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/dns-config")
@@ -31,7 +34,7 @@ public class DnsConfigController {
         Page<DnsConfigDto> dnsConfigList = dnsConfigService.getAll(
                 authService.getCurrentAccountId(),
                 domainNameId,
-                pageable
+                Pageable.unpaged()
         );
         return res.success("Lấy danh sách cấu hình DNS thành công.", dnsConfigList);
     }
@@ -67,5 +70,17 @@ public class DnsConfigController {
     public ResponseEntity<ResponseCustom<Object>> delete(@PathVariable Long dnsConfigId) {
         dnsConfigService.delete(authService.getCurrentAccountId(), dnsConfigId);
         return res.success("Xóa cấu hình DNS thành công.", null);
+    }
+
+    @PatchMapping("/match")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<ResponseCustom<Page<DnsConfigDto>>> match(
+            @RequestBody DnsConfigMatchReq req
+    ) {
+        Page<DnsConfigDto> dnsConfigUpdate = dnsConfigService.match(
+                authService.getCurrentAccountId(),
+                req
+        );
+        return res.success("Cập nhật cấu hình DNS thành công.", dnsConfigUpdate);
     }
 }
