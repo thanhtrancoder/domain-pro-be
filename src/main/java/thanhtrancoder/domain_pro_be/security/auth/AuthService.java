@@ -1,17 +1,27 @@
 package thanhtrancoder.domain_pro_be.security.auth;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import thanhtrancoder.domain_pro_be.common.exceptions.QueryException;
 import thanhtrancoder.domain_pro_be.common.utils.RegexUtils;
 import thanhtrancoder.domain_pro_be.module.account.AccountEntity;
 import thanhtrancoder.domain_pro_be.module.account.AccountService;
+import thanhtrancoder.domain_pro_be.module.account.dto.AccountProfileRes;
+import thanhtrancoder.domain_pro_be.module.account.dto.AccountUpdateReq;
+import thanhtrancoder.domain_pro_be.module.cart.dto.CartDto;
 import thanhtrancoder.domain_pro_be.security.auth.dto.LoginReq;
 import thanhtrancoder.domain_pro_be.security.auth.dto.RegisterReq;
 import thanhtrancoder.domain_pro_be.common.exceptions.CustomException;
+import thanhtrancoder.domain_pro_be.security.auth.dto.UpdateReq;
+
+import java.util.List;
 
 @Service
 public class AuthService {
@@ -81,5 +91,58 @@ public class AuthService {
 
     public Long getCurrentAccountId() {
         return getCurrentAccount().getAccountId();
+    }
+
+    @Transactional
+    public AccountProfileRes updateAccount(UpdateReq updateReq) {
+        AccountEntity account = getCurrentAccount();
+        if (account == null) {
+            throw new CustomException("Tài khoản không tồn tại");
+        }
+
+        AccountUpdateReq accountUpdateReq = new AccountUpdateReq();
+
+        if (!updateReq.getFullname().equals(account.getFullname())) {
+            accountUpdateReq.setFullname(updateReq.getFullname());
+        }
+
+        if (updateReq.getOldPassword() != null && !updateReq.getOldPassword().isEmpty()) {
+            if (!passwordEncoder.matches(updateReq.getOldPassword(), account.getPassword())) {
+                throw new CustomException("Mật khẩu cũ không chính xác");
+            }
+            if (!updateReq.getNewPassword().equals(updateReq.getConfirmPassword())) {
+                throw new CustomException("Mật khẩu mới và xác nhận mật khẩu không khớp.");
+            }
+            if (updateReq.getNewPassword().length() < 8) {
+                throw new CustomException("Mật khẩu mới phải có ít nhất 8 ký tự");
+            }
+            if (updateReq.getNewPassword().toLowerCase().equals(updateReq.getNewPassword())) {
+                throw new CustomException("Mật khẩu mới phải chứa chữ hoa");
+            }
+            if (updateReq.getNewPassword().toUpperCase().equals(updateReq.getNewPassword())) {
+                throw new CustomException("Mật khẩu mới phải chứa chữ thường");
+            }
+            if (!updateReq.getNewPassword().matches(".*[0-9].*")) {
+                throw new CustomException("Mật khẩu mới phải chứa số");
+            }
+            if (!updateReq.getNewPassword().matches(".*[!@#$%^&*()].*")) {
+                throw new CustomException("Mật khẩu mới phải chứa ký tự đặc biệt");
+            }
+            accountUpdateReq.setPasswordEncoded(passwordEncoder.encode(updateReq.getNewPassword()));
+        }
+
+        if (accountUpdateReq.getFullname() == null && accountUpdateReq.getPasswordEncoded() == null) {
+            throw new CustomException("Không có thông tin nào được thay đổi.");
+        }
+
+        try {
+            accountService.update(accountUpdateReq, account.getAccountId());
+
+            AccountProfileRes accountProfileRes = accountService.getProfileByAccount(account);
+
+            return accountProfileRes;
+        } catch (Exception e) {
+            throw new QueryException("Có lỗi xảy ra khi cập nhật tài khoản.", e);
+        }
     }
 }

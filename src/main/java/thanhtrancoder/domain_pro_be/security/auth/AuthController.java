@@ -2,16 +2,17 @@ package thanhtrancoder.domain_pro_be.security.auth;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 import thanhtrancoder.domain_pro_be.common.entity.ResponseCustomService;
 import thanhtrancoder.domain_pro_be.module.account.AccountEntity;
+import thanhtrancoder.domain_pro_be.module.account.dto.AccountProfileRes;
+import thanhtrancoder.domain_pro_be.module.account.dto.AccountUpdateReq;
 import thanhtrancoder.domain_pro_be.security.auth.dto.LoginReq;
 import thanhtrancoder.domain_pro_be.security.auth.dto.LoginRes;
 import thanhtrancoder.domain_pro_be.security.auth.dto.RegisterReq;
 import thanhtrancoder.domain_pro_be.common.entity.ResponseCustom;
+import thanhtrancoder.domain_pro_be.security.auth.dto.UpdateReq;
 import thanhtrancoder.domain_pro_be.security.jwt.JwtUtil;
 
 import java.time.LocalDateTime;
@@ -57,5 +58,12 @@ public class AuthController {
         loginRes.setEmail(accountEntity.getEmail());
 
         return res.success("Đăng ký thành công.", loginRes);
+    }
+
+    @PutMapping("/update")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ResponseCustom<AccountProfileRes>> updateAccount(@RequestBody UpdateReq updateReq) {
+        AccountProfileRes result = authService.updateAccount(updateReq);
+        return res.success("Cập nhật tài khoản thành công.", result);
     }
 }
