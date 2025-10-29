@@ -7,6 +7,8 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Long> {
 
     Boolean existsByEmail(String email);
 
+    Boolean existsByEmailAndIsDeleted(String email, Boolean isDeleted);
+
     AccountEntity findOneByEmailAndIsDeleted(String email, Boolean isDeleted);
 
     Boolean existsByGoogleId(String googleId);

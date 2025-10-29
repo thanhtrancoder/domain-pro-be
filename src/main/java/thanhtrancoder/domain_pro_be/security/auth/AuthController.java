@@ -8,11 +8,8 @@ import thanhtrancoder.domain_pro_be.common.entity.ResponseCustomService;
 import thanhtrancoder.domain_pro_be.module.account.AccountEntity;
 import thanhtrancoder.domain_pro_be.module.account.dto.AccountProfileRes;
 import thanhtrancoder.domain_pro_be.module.account.dto.AccountUpdateReq;
-import thanhtrancoder.domain_pro_be.security.auth.dto.LoginReq;
-import thanhtrancoder.domain_pro_be.security.auth.dto.LoginRes;
-import thanhtrancoder.domain_pro_be.security.auth.dto.RegisterReq;
+import thanhtrancoder.domain_pro_be.security.auth.dto.*;
 import thanhtrancoder.domain_pro_be.common.entity.ResponseCustom;
-import thanhtrancoder.domain_pro_be.security.auth.dto.UpdateReq;
 import thanhtrancoder.domain_pro_be.security.jwt.JwtUtil;
 
 import java.time.LocalDateTime;
@@ -65,5 +62,20 @@ public class AuthController {
     public ResponseEntity<ResponseCustom<AccountProfileRes>> updateAccount(@RequestBody UpdateReq updateReq) {
         AccountProfileRes result = authService.updateAccount(updateReq);
         return res.success("Cập nhật tài khoản thành công.", result);
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<ResponseCustom<Object>> forgotPassword(@RequestBody ForgotPasswordReq forgotPasswordReq) {
+        authService.forgotPassword(forgotPasswordReq.getEmail());
+        return res.success("Yêu cầu lấy lại mật khẩu thành công.", null);
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<ResponseCustom<Object>> forgotPassword(@RequestBody ResetPasswordReq resetPasswordReq) {
+        Boolean result = authService.resetPassword(resetPasswordReq);
+        if (!result) {
+            return res.fail("Mã OTP không chính xác.");
+        }
+        return res.success("Mật khẩu đã được thay đổi.", null);
     }
 }

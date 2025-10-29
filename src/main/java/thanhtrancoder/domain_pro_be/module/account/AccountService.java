@@ -137,6 +137,17 @@ public class AccountService {
         } catch (Exception e) {
             throw new QueryException("Có lỗi xảy ra khi cập nhật tài khoản.", e);
         }
+    }
 
+    public AccountEntity getAccountAccountId(Long accountId) {
+        AccountEntity account = accountRepository.findOneByAccountIdAndIsDeleted(accountId, false);
+        if (account == null) {
+            throw new CustomException("Không tìm thấy thông tin tài khoản.");
+        }
+        return account;
+    }
+
+    public Boolean checkActiveAccountByEmail(String email) {
+        return accountRepository.existsByEmailAndIsDeleted(email, false);
     }
 }

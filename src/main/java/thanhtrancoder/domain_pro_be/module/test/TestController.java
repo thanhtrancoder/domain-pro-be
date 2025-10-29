@@ -8,10 +8,15 @@ import thanhtrancoder.domain_pro_be.common.entity.ResponseCustom;
 import thanhtrancoder.domain_pro_be.common.entity.ResponseCustomService;
 import thanhtrancoder.domain_pro_be.common.exceptions.CustomException;
 import thanhtrancoder.domain_pro_be.module.account.AccountEntity;
+import thanhtrancoder.domain_pro_be.module.email.EmailService;
+import thanhtrancoder.domain_pro_be.module.email.EmailTemplate;
+import thanhtrancoder.domain_pro_be.module.email.dto.EmailBody;
 import thanhtrancoder.domain_pro_be.module.test.dto.TestDto;
 import thanhtrancoder.domain_pro_be.security.auth.AuthService;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/test")
@@ -22,6 +27,8 @@ public class TestController {
     private ResponseCustomService res;
     @Autowired
     private AuthService authService;
+    @Autowired
+    private EmailService emailService;
 
     @GetMapping
     public ResponseEntity<ResponseCustom<TestEntity>> test() {
@@ -66,5 +73,21 @@ public class TestController {
         AccountEntity accountEntity = authService.getCurrentAccount();
 
         return res.success("Thông tin tài khoản hiện tại", accountEntity);
+    }
+
+    @GetMapping("/send")
+    public ResponseEntity<String> sendMail() {
+        Map<String, Integer> domains = new HashMap<>();
+        domains.put("mydomain.com", 1);
+        domains.put("mydomain.pro", 2);
+
+        emailService.orderPaymentSuccess(
+                5L,
+
+                "123456",
+                domains
+        );
+
+        return ResponseEntity.ok("Sent");
     }
 }

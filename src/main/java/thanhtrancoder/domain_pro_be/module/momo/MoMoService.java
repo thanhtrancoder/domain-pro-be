@@ -16,10 +16,15 @@ import thanhtrancoder.domain_pro_be.common.exceptions.CustomException;
 import thanhtrancoder.domain_pro_be.common.exceptions.ExternalException;
 import thanhtrancoder.domain_pro_be.common.exceptions.QueryException;
 import thanhtrancoder.domain_pro_be.common.utils.ConstantValue;
+import thanhtrancoder.domain_pro_be.module.account.AccountEntity;
+import thanhtrancoder.domain_pro_be.module.account.AccountService;
 import thanhtrancoder.domain_pro_be.module.cart.CartService;
 import thanhtrancoder.domain_pro_be.module.domainName.DomainNameService;
 import thanhtrancoder.domain_pro_be.module.domainName.dto.DomainNameDto;
+import thanhtrancoder.domain_pro_be.module.email.EmailService;
 import thanhtrancoder.domain_pro_be.module.momo.dto.*;
+import thanhtrancoder.domain_pro_be.module.notification.NotificationService;
+import thanhtrancoder.domain_pro_be.module.notification.dto.NotificationDto;
 import thanhtrancoder.domain_pro_be.module.orderItem.OrderItemService;
 import thanhtrancoder.domain_pro_be.module.orderItem.dto.OrderItemDto;
 import thanhtrancoder.domain_pro_be.module.orders.OrderService;
@@ -33,9 +38,7 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class MoMoService {
@@ -55,6 +58,10 @@ public class MoMoService {
     private CartService cartService;
     @Autowired
     private VoucherService voucherService;
+    @Autowired
+    private NotificationService notificationService;
+    @Autowired
+    private EmailService emailService;
 
     @Value("${dev.momo.endpoint}")
     private String endpoint;
@@ -177,7 +184,8 @@ public class MoMoService {
                     0L
             );
 
-            // Create domainName
+            // Create domainName and get domains
+            Map<String, Integer> domains = new HashMap<>();
             Page<OrderItemDto> orderItemList = orderItemService.getAllByOrderId(
                     Long.valueOf(paymentBillDto.getOrderId()),
                     Pageable.unpaged()
@@ -195,6 +203,8 @@ public class MoMoService {
                 domainNameDto.setAccountId(orderDto.getAccountId());
 
                 domainNameService.create(domainNameDto, orderDto.getAccountId());
+
+                domains.put(orderItem.getDomainName() + orderItem.getDomainExtend(), orderItem.getPeriod());
             });
 
             // Delete cart item
@@ -206,6 +216,18 @@ public class MoMoService {
             }
 
             // Create notification
+            NotificationDto notificationDto = new NotificationDto();
+            notificationDto.setType(ConstantValue.NOTIFICATION_TYPE_SUCCESS);
+            notificationDto.setTitle("Thanh toán đơn hàng " + paymentBillDto.getOrderId() + " thành công");
+            notificationDto.setContent("");
+            notificationService.systemCreate(orderDto.getAccountId(), notificationDto);
+
+            // Send email
+            emailService.orderPaymentSuccess(
+                    orderDto.getAccountId(),
+                    orderDto.getOrderId().toString(),
+                    domains
+            );
         } catch (Exception e) {
             throw new QueryException("Có lỗi xảy ra khi thanh toán", e);
         }
