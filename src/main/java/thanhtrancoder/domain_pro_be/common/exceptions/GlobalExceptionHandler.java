@@ -34,6 +34,11 @@ public class GlobalExceptionHandler {
         return res.fail(exception.getMessage());
     }
 
+    @ExceptionHandler(LoginSessionExpired.class)
+    public ResponseEntity<ResponseCustom<Object>> handleLoginSessionExpired(LoginSessionExpired exception) {
+        return res.loginSessionExpired(exception.getMessage());
+    }
+
     @ExceptionHandler(QueryException.class)
     public ResponseEntity<ResponseCustom<Object>> handleQueryException(QueryException exception) {
         logger.error("Server error", exception);

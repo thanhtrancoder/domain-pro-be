@@ -38,7 +38,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         String name = (String) attributes.get("name");
         String avatarUrl = (String) attributes.get("picture");
 
-        String token = jwtUtil.generateToken(id);
+        String token = jwtUtil.generateToken(id, 1);
 
         ResponseCookie cookie = ResponseCookie.from("JWT", token)
                 .httpOnly(true)

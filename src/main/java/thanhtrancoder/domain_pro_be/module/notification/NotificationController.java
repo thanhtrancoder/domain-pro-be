@@ -6,12 +6,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import thanhtrancoder.domain_pro_be.common.entity.ResponseCustom;
 import thanhtrancoder.domain_pro_be.common.entity.ResponseCustomService;
 import thanhtrancoder.domain_pro_be.module.notification.dto.NotificationDto;
+import thanhtrancoder.domain_pro_be.module.notification.dto.NotificationNewsReq;
 import thanhtrancoder.domain_pro_be.security.auth.AuthService;
 
 @RestController
@@ -34,5 +33,13 @@ public class NotificationController {
                 pageable
         );
         return res.success("Lấy danh sách thông báo thành công.", notificationDtoList);
+    }
+
+    @PostMapping("/news/register")
+    public ResponseEntity<ResponseCustom<Page<Object>>> registerNews(
+            @RequestBody NotificationNewsReq notificationNewsReq
+    ) {
+        notificationService.registerNews(notificationNewsReq);
+        return res.success("Đăng ký nhận tin tới thành công.", null);
     }
 }

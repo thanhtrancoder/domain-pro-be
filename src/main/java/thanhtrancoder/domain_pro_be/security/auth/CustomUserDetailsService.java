@@ -24,7 +24,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        AccountEntity account = accountService.getAccountByEmail(username);
+        AccountEntity account = accountService.getActiveAccountByEmail(username);
         if (account == null) {
             throw new UsernameNotFoundException("User not found");
         }
@@ -35,11 +35,21 @@ public class CustomUserDetailsService implements UserDetailsService {
             authorities.add(new SimpleGrantedAuthority("ROLE_" + role));
         }
 
-        String password = "";
-        if (account.getPassword() != null) {
-            password = account.getPassword();
+        return new CustomUserDetails(account.getEmail(), account.getTokenVersion(), authorities);
+    }
+
+    public CustomUserDetails loadUserByEmail(String email) {
+        AccountEntity account = accountService.getActiveAccountByEmail(email);
+        if (account == null) {
+            throw new UsernameNotFoundException("User not found");
         }
 
-        return new CustomUserDetails(account.getEmail(), authorities);
+        List<String> roles = accountRoleService.getRolesByAccountId(account.getAccountId());
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        for (String role : roles) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + role));
+        }
+
+        return new CustomUserDetails(account.getEmail(), account.getTokenVersion(), authorities);
     }
 }

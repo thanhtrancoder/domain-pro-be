@@ -7,11 +7,17 @@ import java.util.Collection;
 
 public class CustomUserDetails implements UserDetails {
     private String username;
+    private Integer tokenVersion;
     private Collection<? extends GrantedAuthority> authorities;
 
-    public CustomUserDetails(String username, Collection<? extends GrantedAuthority> authorities) {
+    public CustomUserDetails(String username, Integer tokenVersion, Collection<? extends GrantedAuthority> authorities) {
         this.username = username;
+        this.tokenVersion = tokenVersion;
         this.authorities = authorities;
+    }
+
+    public Integer getTokenVersion() {
+        return tokenVersion;
     }
 
     @Override

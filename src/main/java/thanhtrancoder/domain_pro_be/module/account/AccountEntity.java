@@ -31,4 +31,7 @@ public class AccountEntity extends BaseEntity {
 
     @Column(name = "google_id", length = 200, unique = true)
     private String googleId;
+
+    @Column(name = "token_version", nullable = false)
+    private Integer tokenVersion;
 }

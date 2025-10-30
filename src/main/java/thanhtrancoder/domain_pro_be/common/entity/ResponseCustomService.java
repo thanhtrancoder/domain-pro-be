@@ -64,4 +64,12 @@ public class ResponseCustomService {
         response.setMessage(message);
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
+
+    public <T> ResponseEntity<ResponseCustom<T>> loginSessionExpired(String message) {
+        ResponseCustom<T> response = new ResponseCustom<>();
+        response.setTimestamp(LocalDateTime.now());
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        response.setMessage(message);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    }
 }

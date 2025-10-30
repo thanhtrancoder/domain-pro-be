@@ -2,12 +2,15 @@ package thanhtrancoder.domain_pro_be.module.notification;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import thanhtrancoder.domain_pro_be.common.exceptions.QueryException;
+import thanhtrancoder.domain_pro_be.module.email.EmailService;
 import thanhtrancoder.domain_pro_be.module.notification.dto.NotificationDto;
+import thanhtrancoder.domain_pro_be.module.notification.dto.NotificationNewsReq;
 
 import java.time.LocalDateTime;
 
@@ -15,6 +18,8 @@ import java.time.LocalDateTime;
 public class NotificationService {
     @Autowired
     private NotificationRepository notificationRepository;
+    @Autowired
+    private EmailService emailService;
     @Autowired
     private ModelMapper modelMapper;
 
@@ -46,6 +51,9 @@ public class NotificationService {
         } catch (Exception e) {
             throw new QueryException("Có lỗi xảy ra khi tạo thông báo.", e);
         }
+    }
 
+    public void registerNews(NotificationNewsReq notificationNewsReq) {
+        emailService.registrationNewsSuccess(notificationNewsReq.getEmail());
     }
 }

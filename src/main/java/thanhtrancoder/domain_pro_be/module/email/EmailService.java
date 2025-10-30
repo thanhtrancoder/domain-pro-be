@@ -3,6 +3,7 @@ package thanhtrancoder.domain_pro_be.module.email;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -20,6 +21,9 @@ public class EmailService {
     private JavaMailSender mailSender;
     @Autowired
     private AccountService accountService;
+
+    @Value("${frontend.origin}")
+    private String frontendOrigin;
 
     private void sendSimpleEmail(String to, String subject, String text) {
         SimpleMailMessage message = new SimpleMailMessage();
@@ -76,5 +80,16 @@ public class EmailService {
         EmailTemplate emailTemplate = new EmailTemplate();
         EmailBody emailBody = emailTemplate.orderPaymentSuccess(account.getFullname(), orderId, domainsWithYears);
         sendHtmlEmail(account.getEmail(), emailBody.getSubject(), emailBody.getBody());
+    }
+
+    public void registrationNewsSuccess(String email) {
+        EmailTemplate emailTemplate = new EmailTemplate();
+        EmailBody emailBody = emailTemplate.registrationNewsSuccess(
+                email,
+                "DomainPro",
+                frontendOrigin,
+                "https://domainpro.com/unsubscribe"
+        );
+        sendHtmlEmail(email, emailBody.getSubject(), emailBody.getBody());
     }
 }

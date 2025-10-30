@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AccountRepository extends JpaRepository<AccountEntity, Long> {
     AccountEntity findByEmail(String email);
-
+    
     Boolean existsByEmail(String email);
 
     Boolean existsByEmailAndIsDeleted(String email, Boolean isDeleted);

@@ -77,6 +77,7 @@ public class AuthService {
             account.setEmail(registerReq.getEmail());
             account.setPassword(passwordEncoder.encode(registerReq.getPassword()));
             account.setIsVerify(false);
+            account.setTokenVersion(1);
             accountService.create(account);
 
             // Send email

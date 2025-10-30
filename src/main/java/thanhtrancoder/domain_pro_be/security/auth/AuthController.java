@@ -28,7 +28,7 @@ public class AuthController {
     public ResponseEntity<ResponseCustom<LoginRes>> login(@RequestBody LoginReq loginReq) {
         AccountEntity accountEntity = authService.login(loginReq);
 
-        String token = jwtUtil.generateToken(loginReq.getEmail());
+        String token = jwtUtil.generateToken(loginReq.getEmail(), accountEntity.getTokenVersion());
 
         LoginRes loginRes = new LoginRes();
         loginRes.setToken(token);
@@ -47,7 +47,7 @@ public class AuthController {
         loginReq.setPassword(registerReq.getPassword());
         AccountEntity accountEntity = authService.login(loginReq);
 
-        String token = jwtUtil.generateToken(loginReq.getEmail());
+        String token = jwtUtil.generateToken(loginReq.getEmail(), accountEntity.getTokenVersion());
 
         LoginRes loginRes = new LoginRes();
         loginRes.setToken(token);

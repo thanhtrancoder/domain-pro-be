@@ -27,9 +27,10 @@ public class JwtUtil {
 
     }
 
-    public String generateToken(String email) {
+    public String generateToken(String email, Integer tokenVersion) {
         return Jwts.builder()
                 .setSubject(email)
+                .claim("tokenVersion", tokenVersion)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
                 .signWith(SignatureAlgorithm.HS256, getSecretKey())
@@ -43,6 +44,15 @@ public class JwtUtil {
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
+    }
+
+    public Integer extractTokenVersion(String token) {
+        return Jwts.parser()
+                .setSigningKey(getSecretKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("tokenVersion", Integer.class);
     }
 
     public boolean validateToken(String token) {

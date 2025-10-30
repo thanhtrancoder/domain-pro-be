@@ -130,6 +130,7 @@ public class AccountService {
             }
             if (accountUpdateReq.getPasswordEncoded() != null) {
                 account.setPassword(accountUpdateReq.getPasswordEncoded());
+                account.setTokenVersion(account.getTokenVersion() + 1);
             }
             account.setUpdatedBy(accountId);
             account.setUpdatedAt(LocalDateTime.now());

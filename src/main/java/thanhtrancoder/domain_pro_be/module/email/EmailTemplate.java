@@ -118,4 +118,100 @@ public class EmailTemplate {
         emailBody.setBody(body.toString());
         return emailBody;
     }
+
+    public EmailBody registrationNewsSuccess(String userName, String websiteName, String websiteUrl, String unsubscribeUrl) {
+        userName = userName == null ? "" : userName;
+        EmailBody emailBody = new EmailBody();
+        emailBody.setSubject("DomainPro - Thank you for registering");
+        emailBody.setBody(
+                """
+                        <!DOCTYPE html>
+                        <html lang="vi">
+                        <head>
+                            <meta charset="UTF-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                            <title>Xác nhận đăng ký nhận tin</title>
+                            <style>
+                                body {
+                                    font-family: Arial, sans-serif;
+                                    background-color: #f4f4f4;
+                                    margin: 0;
+                                    padding: 0;
+                                }
+                                .container {
+                                    max-width: 600px;
+                                    margin: 20px auto;
+                                    background-color: #ffffff;
+                                    padding: 20px;
+                                    border-radius: 8px;
+                                    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+                                }
+                                .header {
+                                    text-align: center;
+                                    padding-bottom: 20px;
+                                    border-bottom: 1px solid #eeeeee;
+                                }
+                                .header h1 {
+                                    color: #007bff;
+                                    margin: 0;
+                                }
+                                .content {
+                                    padding: 20px 0;
+                                    color: #333333;
+                                    line-height: 1.6;
+                                }
+                                .content h2 {
+                                    color: #333333;
+                                }
+                                .content p {
+                                    margin-bottom: 16px;
+                                }
+                                .cta-button {
+                                    display: inline-block;
+                                    background-color: #007bff;
+                                    color: #ffffff;
+                                    padding: 12px 25px;
+                                    text-decoration: none;
+                                    border-radius: 5px;
+                                    font-weight: bold;
+                                    margin: 20px 0;
+                                }
+                                .footer {
+                                    text-align: center;
+                                    padding-top: 20px;
+                                    border-top: 1px solid #eeeeee;
+                                    font-size: 12px;
+                                    color: #777777;
+                                }
+                                .footer a {
+                                    color: #777777;
+                                    text-decoration: underline;
+                                }
+                            </style>
+                        </head>
+                        <body>
+                            <div class="container">
+                                <div class="header">
+                                    <h1>Chào mừng đến với %s!</h1>
+                                </div>
+                                <div class="content">
+                                    <h2>Cảm ơn bạn đã đăng ký!</h2>
+                                    <p>Chào bạn %s,</p>
+                                    <p>Bạn đã đăng ký thành công để nhận những thông tin mới nhất, các chương trình khuyến mãi hấp dẫn và những mẹo hữu ích về tên miền, hosting từ chúng tôi.</p>
+                                    <p>Chúng tôi cam kết sẽ chỉ gửi những email thực sự giá trị và không làm phiền bạn.</p>
+                                    <p>Hãy khám phá thêm các dịch vụ của chúng tôi:</p>
+                                    <a href="%s" class="cta-button">Khám Phá Ngay</a>
+                                    <p>Nếu bạn có bất kỳ câu hỏi nào, đừng ngần ngại trả lời email này nhé.</p>
+                                    <p>Trân trọng,<br>Đội ngũ %s</p>
+                                </div>
+                                <div class="footer">
+                                    <p>&copy; 2024 %s. All rights reserved.</p>
+                                </div>
+                            </div>
+                        </body>
+                        </html>
+                        """.formatted(websiteName, userName, websiteUrl, websiteName, websiteName, unsubscribeUrl)
+        );
+        return emailBody;
+    }
 }

@@ -11,6 +11,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
+import thanhtrancoder.domain_pro_be.common.exceptions.LoginSessionExpired;
+import thanhtrancoder.domain_pro_be.security.auth.CustomUserDetails;
 import thanhtrancoder.domain_pro_be.security.auth.CustomUserDetailsService;
 import thanhtrancoder.domain_pro_be.common.exceptions.CustomException;
 
@@ -23,6 +26,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
     @Autowired
     private CustomUserDetailsService userDetailsService;
+    @Autowired
+    private HandlerExceptionResolver handlerExceptionResolver;
+
 
     @Override
     protected void doFilterInternal(
@@ -30,34 +36,44 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
-        final String authHeader = request.getHeader("Authorization");
+        try {
+            final String authHeader = request.getHeader("Authorization");
 
-        String username = null;
-        String jwt = null;
+            String jwt = null;
+            String username = null;
+            Integer tokenVersion = null;
 
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            jwt = authHeader.substring(7);
-            try {
-                username = jwtUtil.extractEmail(jwt); // hoặc getUsername
-            } catch (Exception e) {
-                // Log lỗi nếu cần
-            }
-        }
-
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-
-            if (!jwtUtil.validateToken(jwt)) {
-                throw new CustomException("Phiên đăng nhập đã hết hạn");
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                jwt = authHeader.substring(7);
+                try {
+                    username = jwtUtil.extractEmail(jwt);
+                    tokenVersion = jwtUtil.extractTokenVersion(jwt);
+                } catch (Exception e) {
+                    // Log lỗi nếu cần
+                }
             }
 
-            UsernamePasswordAuthenticationToken authToken =
-                    new UsernamePasswordAuthenticationToken(
-                            userDetails, null, userDetails.getAuthorities());
-            authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            SecurityContextHolder.getContext().setAuthentication(authToken);
-        }
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                CustomUserDetails userDetails = userDetailsService.loadUserByEmail(username);
 
-        filterChain.doFilter(request, response);
+                if (!jwtUtil.validateToken(jwt)) {
+                    throw new LoginSessionExpired("Phiên đăng nhập đã hết hạn");
+                }
+
+                if (tokenVersion != userDetails.getTokenVersion()) {
+                    throw new LoginSessionExpired("Phiên đăng nhập đã hết hạn");
+                }
+
+                UsernamePasswordAuthenticationToken authToken =
+                        new UsernamePasswordAuthenticationToken(
+                                userDetails, null, userDetails.getAuthorities());
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authToken);
+            }
+
+            filterChain.doFilter(request, response);
+        } catch (LoginSessionExpired ex) {
+            handlerExceptionResolver.resolveException(request, response, null, ex);
+        }
     }
 }

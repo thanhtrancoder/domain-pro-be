@@ -54,7 +54,7 @@ public class OAuth2Controller {
             throw new CustomException("Tài khoản đã bị chặn.");
         }
 
-        String tokenNew = jwtUtil.generateToken(account.getEmail());
+        String tokenNew = jwtUtil.generateToken(account.getEmail(), account.getTokenVersion());
 
         String email = jwtUtil.extractEmail(tokenNew);
 
