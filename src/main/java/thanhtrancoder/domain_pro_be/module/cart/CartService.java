@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import thanhtrancoder.domain_pro_be.common.exceptions.CustomException;
 import thanhtrancoder.domain_pro_be.common.exceptions.QueryException;
+import thanhtrancoder.domain_pro_be.common.utils.StringUtils;
 import thanhtrancoder.domain_pro_be.module.cart.dto.CartDto;
 import thanhtrancoder.domain_pro_be.module.cart.dto.CartItemQuery;
 import thanhtrancoder.domain_pro_be.module.domainExtend.DomainExtendService;
@@ -32,9 +33,12 @@ public class CartService {
         if (domainNameService.isAvailableDomain(cartDto.getDomainName(), cartDto.getDomainExtendId())) {
             throw new CustomException("Domain đã được đăng ký.");
         }
+        String domainNameWithoutAccent = StringUtils.removeAccent(cartDto.getDomainName());
+        String domainNameWithoutWhitespace = StringUtils.removeAllWhitespace(domainNameWithoutAccent);
+        String domainNameWithoutSpecialCharacters = StringUtils.removeSpecialCharacters(domainNameWithoutWhitespace);
         CartEntity cartExists = cartRepository.findOneByAccountIdAndDomainNameAndDomainExtendIdAndIsDeleted(
                 createdBy,
-                cartDto.getDomainName(),
+                domainNameWithoutSpecialCharacters,
                 cartDto.getDomainExtendId(),
                 false
         );
@@ -49,6 +53,7 @@ public class CartService {
                 cartEntity.setCartId(cartExists.getCartId());
             }
             cartEntity.setAccountId(createdBy);
+            cartEntity.setDomainName(domainNameWithoutSpecialCharacters);
             cartEntity.setPeriod(period);
             cartEntity.setCreatedAt(LocalDateTime.now());
             cartEntity.setCreatedBy(createdBy);

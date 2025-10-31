@@ -169,7 +169,7 @@ public class EmailTemplate {
                                 .cta-button {
                                     display: inline-block;
                                     background-color: #007bff;
-                                    color: #ffffff;
+                                    color: #ffffff !important;
                                     padding: 12px 25px;
                                     text-decoration: none;
                                     border-radius: 5px;
@@ -205,7 +205,7 @@ public class EmailTemplate {
                                     <p>Trân trọng,<br>Đội ngũ %s</p>
                                 </div>
                                 <div class="footer">
-                                    <p>&copy; 2024 %s. All rights reserved.</p>
+                                    <p>&copy; 2025 %s. All rights reserved.</p>
                                 </div>
                             </div>
                         </body>

@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AccountDto {
     private Long accountId;
+    private String avatar;
     private String fullname;
     private String email;
     private Boolean isVerify;

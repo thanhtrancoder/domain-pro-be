@@ -63,15 +63,17 @@ public class DnsConfigService {
         }
         if (dnsConfigRepository.existsByDomainNameIdAndHostAndTypeAndIsDeleted(
                 dnsConfigDto.getDomainNameId(),
-                dnsConfigDto.getHost(),
+                dnsConfigDto.getHost().trim(),
                 DnsType.valueOf(dnsConfigDto.getType()),
                 false
         )) {
-            throw new CustomException("Cấu hình DNS đã tồn tại: " + getDnsConfigString(dnsConfigDto));
+            throw new CustomException("Cấu hình DNS đã tồn tại (không được trùng loại và tên máy chủ): " + getDnsConfigString(dnsConfigDto));
         }
 
         try {
             DnsConfigEntity dnsConfigEntity = modelMapper.map(dnsConfigDto, DnsConfigEntity.class);
+            dnsConfigEntity.setHost(dnsConfigDto.getHost().trim());
+            dnsConfigEntity.setValue(dnsConfigDto.getValue().trim());
             dnsConfigEntity.setIsDeleted(false);
             dnsConfigEntity.setCreatedAt(LocalDateTime.now());
             dnsConfigEntity.setCreatedBy(accountId);
@@ -98,6 +100,17 @@ public class DnsConfigService {
             dnsConfigDto.setTtl(3600);
         }
 
+        List<DnsConfigEntity> dnsConfigEntityList = dnsConfigRepository.findAllByDomainNameIdAndHostAndTypeAndIsDeleted(
+                dnsConfigDto.getDomainNameId(),
+                dnsConfigDto.getHost().trim(),
+                DnsType.valueOf(dnsConfigDto.getType()),
+                false
+        );
+
+        if (dnsConfigEntityList.size() > 2) {
+            throw new CustomException("Cấu hình DNS đã tồn tại (không được trùng loại và tên máy chủ): " + getDnsConfigString(dnsConfigDto));
+        }
+
         DnsConfigEntity dnsConfigEntity = dnsConfigRepository.findOneByDnsConfigIdAndIsDeleted(
                 dnsConfigDto.getDnsConfigId(),
                 false
@@ -108,6 +121,8 @@ public class DnsConfigService {
 
         try {
             modelMapper.map(dnsConfigDto, dnsConfigEntity);
+            dnsConfigEntity.setHost(dnsConfigDto.getHost().trim());
+            dnsConfigEntity.setValue(dnsConfigDto.getValue().trim());
             dnsConfigEntity.setUpdatedAt(LocalDateTime.now());
             dnsConfigEntity.setUpdatedBy(accountId);
             dnsConfigRepository.save(dnsConfigEntity);
@@ -149,11 +164,13 @@ public class DnsConfigService {
             for (DnsConfigDto dnsConfig : req.getDnsConfigs()) {
                 if (dnsConfig.getDnsConfigId() == null) {
                     create(accountId, dnsConfig);
-                } else if (dnsConfig.getDomainNameId() != null) {
-                    update(accountId, dnsConfig);
-                } else {
-                    delete(accountId, dnsConfig.getDnsConfigId());
+                    continue;
                 }
+                if (dnsConfig.getDomainNameId() != null) {
+                    update(accountId, dnsConfig);
+                    continue;
+                }
+                delete(accountId, dnsConfig.getDnsConfigId());
             }
 
             Page<DnsConfigDto> dnsConfigDtoPage = getAll(accountId, domainNameId, Pageable.unpaged());

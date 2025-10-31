@@ -15,6 +15,22 @@ public class StringUtils {
         return withoutAccent;
     }
 
+    public static String removeAllWhitespace(String input) {
+        if (input == null) {
+            return null;
+        }
+        return input.replaceAll("\\s+", "");
+    }
+
+    public static String removeSpecialCharacters(String input) {
+        if (input == null) {
+            return null;
+        }
+        // Giữ lại chữ cái, số và khoảng trắng (nếu muốn) hoặc chỉ giữ chữ & số
+        return input.replaceAll("[^a-zA-Z0-9\\-\\.]", "");
+    }
+
+
     public static String generateNumericCode(int length) {
         SecureRandom random = new SecureRandom();
         StringBuilder sb = new StringBuilder(length);

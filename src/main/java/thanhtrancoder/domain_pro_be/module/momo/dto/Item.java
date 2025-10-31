@@ -11,8 +11,8 @@ public class Item {
     private String id;
     private String name;
     private String description;
-    private Long price;
-    private String currency;
+    //    private Long price;
+//    private String currency;
     private Integer quantity;
-    private Long totalPrice;
+//    private Long totalPrice;
 }

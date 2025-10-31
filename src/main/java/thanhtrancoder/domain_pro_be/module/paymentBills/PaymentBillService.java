@@ -60,4 +60,12 @@ public class PaymentBillService {
         }
         return paymentBillEntity;
     }
+
+    public PaymentBillEntity getDetailByOrderIdOrNull(String orderId) {
+        PaymentBillEntity paymentBillEntity = paymentBillRepository.findOneByOrderIdAndIsDeleted(
+                orderId,
+                false
+        );
+        return paymentBillEntity;
+    }
 }

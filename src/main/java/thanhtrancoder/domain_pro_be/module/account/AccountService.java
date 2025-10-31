@@ -83,6 +83,7 @@ public class AccountService {
         Page<CartDto> cartList = cartService.getAll(accountId, Pageable.unpaged());
 
         AccountProfileRes accountProfileRes = new AccountProfileRes();
+        accountProfileRes.setAvatar(account.getAvatar());
         accountProfileRes.setFullname(account.getFullname());
         accountProfileRes.setEmail(account.getEmail());
         accountProfileRes.setIsVerify(account.getIsVerify());

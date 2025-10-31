@@ -47,11 +47,14 @@ public class DomainExtendService {
 
     public Page<DomainExtendDto> searchAvailableDomainExtend(String domainName, Pageable pageable) {
         String domainNameWithoutAccent = StringUtils.removeAccent(domainName);
-        String[] domainNameSplit = domainNameWithoutAccent.trim().split("\\.");
+        String domainNameWithoutWhitespace = StringUtils.removeAllWhitespace(domainNameWithoutAccent);
+        String domainNameWithoutSpecialCharacters = StringUtils.removeSpecialCharacters(domainNameWithoutWhitespace);
+        String[] domainNameSplit = domainNameWithoutSpecialCharacters.trim().split("\\.");
         String domainOnlyName = domainNameSplit[0];
         if (domainNameSplit.length > 1) {
             domainOnlyName = domainNameSplit[domainNameSplit.length - 2];
         }
+   
         Page<DomainExtendEntity> domainExtendEntities = domainExtendRepository
                 .findAvailableDomainExtend(
                         domainOnlyName,

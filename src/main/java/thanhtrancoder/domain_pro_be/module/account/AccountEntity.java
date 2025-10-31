@@ -17,6 +17,9 @@ public class AccountEntity extends BaseEntity {
     @Column(name = "account_id", nullable = false)
     private Long accountId;
 
+    @Column(name = "avatar")
+    private String avatar;
+
     @Column(name = "fullname", length = 200)
     private String fullname;
 

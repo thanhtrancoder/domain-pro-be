@@ -106,10 +106,10 @@ public class MoMoService {
                     + " (" + orderItemDto.getPeriod() + " năm)"
             );
             item.setDescription("Thời hạn: " + orderItemDto.getPeriod() + " năm");
-            item.setPrice(orderItemDto.getPrice());
-            item.setCurrency("VND");
+//            item.setPrice(orderItemDto.getPrice());
+//            item.setCurrency("VND");
             item.setQuantity(1);
-            item.setTotalPrice(orderItemDto.getPrice());
+//            item.setTotalPrice(orderItemDto.getPrice());
 
             items.add(item);
             idIndex++;
@@ -246,14 +246,22 @@ public class MoMoService {
         }
 
         moMoReq.setSignature(null);
-        PaymentBillEntity paymentBillEntity = paymentBillService.adminGetDetailByOrderId(moMoReq.getOrderId());
-        try {
-            MoMoReq momoBill = modelMapper.map(paymentBillEntity, MoMoReq.class);
-            if (!moMoReq.equals(momoBill)) {
+        PaymentBillEntity paymentBillEntity = paymentBillService.getDetailByOrderIdOrNull(moMoReq.getOrderId());
+        if (paymentBillEntity == null) {
+            processPayment(moMoReq);
+        } else {
+            try {
+                MoMoReq momoBill = modelMapper.map(paymentBillEntity, MoMoReq.class);
+                if (!moMoReq.equals(momoBill)) {
+                    processPayment(moMoReq);
+                }
+            } catch (Exception e) {
                 processPayment(moMoReq);
             }
-        } catch (Exception e) {
-            processPayment(moMoReq);
+        }
+
+        if (paymentBillEntity == null) {
+            paymentBillEntity = paymentBillService.getDetailByOrderIdOrNull(moMoReq.getOrderId());
         }
 
         CheckPaymentRes res = new CheckPaymentRes();

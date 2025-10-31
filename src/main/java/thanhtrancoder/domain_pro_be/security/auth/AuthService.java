@@ -117,7 +117,7 @@ public class AuthService {
         AccountUpdateReq accountUpdateReq = new AccountUpdateReq();
 
         if (!updateReq.getFullname().equals(account.getFullname())) {
-            accountUpdateReq.setFullname(updateReq.getFullname());
+            accountUpdateReq.setFullname(updateReq.getFullname().trim());
         }
 
         if (updateReq.getOldPassword() != null && !updateReq.getOldPassword().isEmpty()) {
