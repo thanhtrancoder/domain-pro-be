@@ -35,7 +35,7 @@ public class AuthController {
         loginRes.setFullname(accountEntity.getFullname());
         loginRes.setEmail(accountEntity.getEmail());
 
-        return res.success("Đăng nhập thành công.", loginRes);
+        return res.success("Login successful.", loginRes);
     }
 
     @PostMapping(value = "/register")
@@ -54,28 +54,29 @@ public class AuthController {
         loginRes.setFullname(accountEntity.getFullname());
         loginRes.setEmail(accountEntity.getEmail());
 
-        return res.success("Đăng ký thành công.", loginRes);
+        return res.success("Registration successful.", loginRes);
     }
 
     @PutMapping("/update")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ResponseCustom<AccountProfileRes>> updateAccount(@RequestBody UpdateReq updateReq) {
         AccountProfileRes result = authService.updateAccount(updateReq);
-        return res.success("Cập nhật tài khoản thành công.", result);
+        return res.success("Account updated successfully.", result);
     }
 
     @PostMapping("/forgot-password")
     public ResponseEntity<ResponseCustom<Object>> forgotPassword(@RequestBody ForgotPasswordReq forgotPasswordReq) {
         authService.forgotPassword(forgotPasswordReq.getEmail());
-        return res.success("Yêu cầu lấy lại mật khẩu thành công.", null);
+        return res.success("Password reset request submitted successfully.", null);
     }
 
     @PostMapping("/reset-password")
     public ResponseEntity<ResponseCustom<Object>> forgotPassword(@RequestBody ResetPasswordReq resetPasswordReq) {
         Boolean result = authService.resetPassword(resetPasswordReq);
         if (!result) {
-            return res.fail("Mã OTP không chính xác.");
+            return res.fail("Invalid OTP code.");
         }
-        return res.success("Mật khẩu đã được thay đổi.", null);
+        return res.success("Password has been changed.", null);
     }
 }
+

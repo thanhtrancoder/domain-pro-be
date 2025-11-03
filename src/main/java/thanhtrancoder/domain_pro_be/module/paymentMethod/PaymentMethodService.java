@@ -14,10 +14,10 @@ public class PaymentMethodService {
     public PaymentMethodEntity getPaymentMethod(Long id) {
         Optional<PaymentMethodEntity> paymentMethodEntityOptional = paymentMethodRepository.findById(id);
         if (paymentMethodEntityOptional.isEmpty()) {
-            throw new CustomException("Không tìm thấy phương thức thanh toán.");
+            throw new CustomException("Payment method not found.");
         }
         if (paymentMethodEntityOptional.get().getIsDeleted() == true) {
-            throw new CustomException("Không tìm thấy phương thức thanh toán.");
+            throw new CustomException("Payment method not found.");
         }
         return paymentMethodEntityOptional.get();
     }

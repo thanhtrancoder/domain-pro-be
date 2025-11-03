@@ -35,13 +35,13 @@ public class AuthService {
     public AccountEntity login(LoginReq loginReq) {
         AccountEntity account = accountService.loginByEmail(loginReq.getEmail());
         if (account == null) {
-            throw new CustomException("Sai tên tài khoản hoặc mật khẩu");
+            throw new CustomException("Incorrect username or password");
         }
         if (!passwordEncoder.matches(loginReq.getPassword(), account.getPassword())) {
-            throw new CustomException("Sai tên tài khoản hoặc mật khẩu");
+            throw new CustomException("Incorrect username or password");
         }
         if (account.getPassword() == null) {
-            throw new CustomException("Sai tên tài khoản hoặc mật khẩu");
+            throw new CustomException("Incorrect username or password");
         }
         return account;
     }
@@ -51,25 +51,25 @@ public class AuthService {
         if (registerReq.getEmail() == null
                 || registerReq.getEmail().trim().isEmpty()
                 || !RegexUtils.EMAIL_REGEX.matcher(registerReq.getEmail().trim()).matches()) {
-            throw new CustomException("Email không hợp lệ.");
+            throw new CustomException("Invalid email.");
         }
         if (!registerReq.getPassword().equals(registerReq.getConfirmPassword())) {
-            throw new CustomException("Mật khẩu không khớp");
+            throw new CustomException("Passwords do not match");
         }
         if (registerReq.getPassword().length() < 8) {
-            throw new CustomException("Mật khẩu phải có ít nhất 8 ký tự");
+            throw new CustomException("Password must be at least 8 characters");
         }
         if (registerReq.getPassword().toLowerCase().equals(registerReq.getPassword())) {
-            throw new CustomException("Mật khẩu phải chứa chữ hoa");
+            throw new CustomException("Password must contain an uppercase letter");
         }
         if (registerReq.getPassword().toUpperCase().equals(registerReq.getPassword())) {
-            throw new CustomException("Mật khẩu phải chứa chữ thường");
+            throw new CustomException("Password must contain a lowercase letter");
         }
         if (!registerReq.getPassword().matches(".*[0-9].*")) {
-            throw new CustomException("Mật khẩu phải chứa số");
+            throw new CustomException("Password must contain a number");
         }
         if (!registerReq.getPassword().matches(".*[!@#$%^&*()].*")) {
-            throw new CustomException("Mật khẩu phải chứa ký tự đặc biệt");
+            throw new CustomException("Password must contain a special character");
         }
 
         try {
@@ -86,7 +86,7 @@ public class AuthService {
             if (e instanceof CustomException) {
                 throw new CustomException(e.getMessage());
             }
-            throw new QueryException("Có lỗi xảy ra khi đăng ký.", e);
+            throw new QueryException("An error occurred during registration.", e);
         }
     }
 
@@ -111,7 +111,7 @@ public class AuthService {
     public AccountProfileRes updateAccount(UpdateReq updateReq) {
         AccountEntity account = getCurrentAccount();
         if (account == null) {
-            throw new CustomException("Tài khoản không tồn tại");
+            throw new CustomException("Account does not exist");
         }
 
         AccountUpdateReq accountUpdateReq = new AccountUpdateReq();
@@ -122,31 +122,31 @@ public class AuthService {
 
         if (updateReq.getOldPassword() != null && !updateReq.getOldPassword().isEmpty()) {
             if (!passwordEncoder.matches(updateReq.getOldPassword(), account.getPassword())) {
-                throw new CustomException("Mật khẩu cũ không chính xác");
+                throw new CustomException("Old password is incorrect");
             }
             if (!updateReq.getNewPassword().equals(updateReq.getConfirmPassword())) {
-                throw new CustomException("Mật khẩu mới và xác nhận mật khẩu không khớp.");
+                throw new CustomException("New password and confirmation do not match.");
             }
             if (updateReq.getNewPassword().length() < 8) {
-                throw new CustomException("Mật khẩu mới phải có ít nhất 8 ký tự");
+                throw new CustomException("New password must be at least 8 characters");
             }
             if (updateReq.getNewPassword().toLowerCase().equals(updateReq.getNewPassword())) {
-                throw new CustomException("Mật khẩu mới phải chứa chữ hoa");
+                throw new CustomException("New password must contain an uppercase letter");
             }
             if (updateReq.getNewPassword().toUpperCase().equals(updateReq.getNewPassword())) {
-                throw new CustomException("Mật khẩu mới phải chứa chữ thường");
+                throw new CustomException("New password must contain a lowercase letter");
             }
             if (!updateReq.getNewPassword().matches(".*[0-9].*")) {
-                throw new CustomException("Mật khẩu mới phải chứa số");
+                throw new CustomException("New password must contain a number");
             }
             if (!updateReq.getNewPassword().matches(".*[!@#$%^&*()].*")) {
-                throw new CustomException("Mật khẩu mới phải chứa ký tự đặc biệt");
+                throw new CustomException("New password must contain a special character");
             }
             accountUpdateReq.setPasswordEncoded(passwordEncoder.encode(updateReq.getNewPassword()));
         }
 
         if (accountUpdateReq.getFullname() == null && accountUpdateReq.getPasswordEncoded() == null) {
-            throw new CustomException("Không có thông tin nào được thay đổi.");
+            throw new CustomException("No information was changed.");
         }
 
         try {
@@ -163,7 +163,7 @@ public class AuthService {
             if (e instanceof CustomException) {
                 throw new CustomException(e.getMessage());
             }
-            throw new QueryException("Có lỗi xảy ra khi cập nhật tài khoản.", e);
+            throw new QueryException("An error occurred while updating the account.", e);
         }
     }
 
@@ -184,11 +184,11 @@ public class AuthService {
                 if (e instanceof CustomException) {
                     throw new CustomException(e.getMessage());
                 }
-                throw new QueryException("Có lỗi xảy ra khi yêu cầu lấy lại mật khẩu", e);
+                throw new QueryException("An error occurred while requesting a password reset", e);
             }
         } else {
             try {
-                Thread.sleep(4000);  // 4 giây = 4000 ms
+                Thread.sleep(4000);  // 4 seconds = 4000 ms
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
@@ -200,30 +200,30 @@ public class AuthService {
         if (resetPasswordReq.getEmail() == null
                 || resetPasswordReq.getEmail().trim().isEmpty()
                 || !RegexUtils.EMAIL_REGEX.matcher(resetPasswordReq.getEmail().trim()).matches()) {
-            throw new CustomException("Email không hợp lệ.");
+            throw new CustomException("Invalid email.");
         }
         if (resetPasswordReq.getOtp() == null
                 || resetPasswordReq.getOtp().trim().isEmpty()
                 || resetPasswordReq.getOtp().length() != 6) {
-            throw new CustomException("OTP không hợp lệ.");
+            throw new CustomException("Invalid OTP.");
         }
         if (!resetPasswordReq.getPassword().equals(resetPasswordReq.getConfirmPassword())) {
-            throw new CustomException("Mật khẩu mới và xác nhận mật khẩu không khớp.");
+            throw new CustomException("New password and confirmation do not match.");
         }
         if (resetPasswordReq.getPassword().length() < 8) {
-            throw new CustomException("Mật khẩu mới phải có ít nhất 8 ký tự");
+            throw new CustomException("New password must be at least 8 characters");
         }
         if (resetPasswordReq.getPassword().toLowerCase().equals(resetPasswordReq.getPassword())) {
-            throw new CustomException("Mật khẩu mới phải chứa chữ hoa");
+            throw new CustomException("New password must contain an uppercase letter");
         }
         if (resetPasswordReq.getPassword().toUpperCase().equals(resetPasswordReq.getPassword())) {
-            throw new CustomException("Mật khẩu mới phải chứa chữ thường");
+            throw new CustomException("New password must contain a lowercase letter");
         }
         if (!resetPasswordReq.getPassword().matches(".*[0-9].*")) {
-            throw new CustomException("Mật khẩu mới phải chứa số");
+            throw new CustomException("New password must contain a number");
         }
         if (!resetPasswordReq.getPassword().matches(".*[!@#$%^&*()].*")) {
-            throw new CustomException("Mật khẩu mới phải chứa ký tự đặc biệt");
+            throw new CustomException("New password must contain a special character");
         }
 
         if (accountService.checkActiveAccountByEmail(resetPasswordReq.getEmail())) {
@@ -246,7 +246,7 @@ public class AuthService {
                 if (e instanceof CustomException) {
                     throw new CustomException(e.getMessage());
                 }
-                throw new QueryException("Có lỗi xảy ra khi reset mật khẩu", e);
+                throw new QueryException("An error occurred while resetting the password", e);
             }
         }
         return false;

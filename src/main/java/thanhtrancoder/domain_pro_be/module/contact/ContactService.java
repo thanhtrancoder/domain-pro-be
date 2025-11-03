@@ -14,15 +14,15 @@ public class ContactService {
 
     public void createContact(ContactDto contactDto) {
         if (contactDto.getName() == null || contactDto.getName().trim().isEmpty()) {
-            throw new CustomException("Tên không thể bỏ trống.");
+            throw new CustomException("Name cannot be empty.");
         }
         if (contactDto.getEmail() == null
                 || contactDto.getEmail().trim().isEmpty()
                 || !RegexUtils.EMAIL_REGEX.matcher(contactDto.getEmail().trim()).matches()) {
-            throw new CustomException("Email không hợp lệ.");
+            throw new CustomException("Invalid email.");
         }
         if (contactDto.getMessage() == null || contactDto.getMessage().trim().isEmpty()) {
-            throw new CustomException("Nội dung không thể bỏ trống.");
+            throw new CustomException("Message cannot be empty.");
         }
 
         emailService.sendSimpleEmail(

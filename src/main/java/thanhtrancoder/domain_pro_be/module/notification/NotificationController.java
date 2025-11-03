@@ -33,7 +33,7 @@ public class NotificationController {
                 authService.getCurrentAccountId(),
                 pageable
         );
-        return res.success("Lấy danh sách thông báo thành công.", notificationDtoList);
+        return res.success("Fetched notifications successfully.", notificationDtoList);
     }
 
     @PostMapping("/news/register")
@@ -41,6 +41,7 @@ public class NotificationController {
             @RequestBody NotificationNewsReq notificationNewsReq
     ) {
         notificationService.registerNews(notificationNewsReq);
-        return res.success("Đăng ký nhận tin tới thành công.", null);
+        return res.success("Successfully subscribed to news updates.", null);
     }
 }
+

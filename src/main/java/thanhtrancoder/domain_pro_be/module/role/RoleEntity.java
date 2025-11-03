@@ -18,5 +18,5 @@ public class RoleEntity extends BaseEntity {
     private Long roleId;
 
     @Column(name = "name", nullable = false, length = 45, unique = true)
-    private String name; // Ví dụ: "ADMIN", "USER", "MANAGER"
+    private String name; // Example: "ADMIN", "USER", "MANAGER"
 }

@@ -35,7 +35,7 @@ public class TestController {
         try {
             Thread.sleep(3000);
         } catch (Exception e) {
-            throw new CustomException("Có lỗi xảy ra khi giả lập tải.");
+            throw new CustomException("An error occurred while simulating load.");
         }
 
         TestEntity testEntity = new TestEntity();
@@ -47,7 +47,7 @@ public class TestController {
         testEntity.setUpdatedBy(1L);
         testEntity.setIsDeleted(false);
 
-        return res.success("test thành công.", testEntity);
+        return res.success("Test succeeded.", testEntity);
     }
 
     @PostMapping("/post")
@@ -55,10 +55,10 @@ public class TestController {
         try {
             Thread.sleep(3000);
         } catch (Exception e) {
-            throw new CustomException("Có lỗi xảy ra khi giả lập tải.");
+            throw new CustomException("An error occurred while simulating load.");
         }
 
-        return res.success("test thành công.", testDto);
+        return res.success("Test succeeded.", testDto);
     }
 
     @GetMapping("/user")
@@ -72,7 +72,7 @@ public class TestController {
     public ResponseEntity<ResponseCustom<AccountEntity>> getCurrentAccount() {
         AccountEntity accountEntity = authService.getCurrentAccount();
 
-        return res.success("Thông tin tài khoản hiện tại", accountEntity);
+        return res.success("Current account information", accountEntity);
     }
 
     @GetMapping("/send")

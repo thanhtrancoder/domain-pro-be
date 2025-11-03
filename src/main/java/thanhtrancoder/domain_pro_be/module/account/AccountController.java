@@ -24,6 +24,7 @@ public class AccountController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ResponseCustom<AccountProfileRes>> getProfile() {
         AccountProfileRes result = accountService.getProfile(authService.getCurrentAccountId());
-        return res.success("Thông tin người dùng.", result);
+        return res.success("User information.", result);
     }
 }
+

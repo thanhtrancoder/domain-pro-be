@@ -38,7 +38,7 @@ public class AccountService {
     @Transactional
     public AccountEntity create(AccountEntity account) {
         if (accountRepository.existsByEmail(account.getEmail())) {
-            throw new CustomException("Email này đã tồn tại, vui lòng sử dụng email khác");
+            throw new CustomException("This email already exists, please use a different email");
         }
 
         try {
@@ -51,7 +51,7 @@ public class AccountService {
 
             return accountNew;
         } catch (Exception e) {
-            throw new QueryException("Có lỗi xảy ra khi tạo tài khoản.", e);
+            throw new QueryException("An error occurred while creating the account.", e);
         }
     }
 
@@ -60,7 +60,7 @@ public class AccountService {
                 email,
                 false);
         if (account == null) {
-            throw new CustomException("Sai tên tài khoản hoặc mật khẩu");
+            throw new CustomException("Incorrect username or password");
         }
         return account;
     }
@@ -75,7 +75,7 @@ public class AccountService {
                 false
         );
         if (account == null) {
-            throw new CustomException("Tài khoản không tồn tại");
+            throw new CustomException("Account does not exist");
         }
 
         List<String> roles = accountRoleService.getRolesByAccountId(accountId);
@@ -119,7 +119,7 @@ public class AccountService {
     public AccountEntity update(AccountUpdateReq accountUpdateReq, Long accountId) {
         Optional<AccountEntity> accountOptional = accountRepository.findById(accountId);
         if (accountOptional.isEmpty()) {
-            throw new CustomException("Tài khoản không tồn tại");
+            throw new CustomException("Account does not exist");
         }
 
         AccountEntity account = accountOptional.get();
@@ -137,14 +137,14 @@ public class AccountService {
             account.setUpdatedAt(LocalDateTime.now());
             return accountRepository.save(account);
         } catch (Exception e) {
-            throw new QueryException("Có lỗi xảy ra khi cập nhật tài khoản.", e);
+            throw new QueryException("An error occurred while updating the account.", e);
         }
     }
 
     public AccountEntity getAccountAccountId(Long accountId) {
         AccountEntity account = accountRepository.findOneByAccountIdAndIsDeleted(accountId, false);
         if (account == null) {
-            throw new CustomException("Không tìm thấy thông tin tài khoản.");
+            throw new CustomException("Account information not found.");
         }
         return account;
     }
@@ -153,3 +153,4 @@ public class AccountService {
         return accountRepository.existsByEmailAndIsDeleted(email, false);
     }
 }
+

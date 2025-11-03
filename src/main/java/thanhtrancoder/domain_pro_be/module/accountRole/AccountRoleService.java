@@ -29,7 +29,7 @@ public class AccountRoleService {
             accountRole.setIsDeleted(false);
             return accountRoleRepository.save(accountRole);
         } catch (Exception e) {
-            throw new QueryException("có lỗi xảy ra khi thực hiện phân quyền cho tài khoản.", e);
+            throw new QueryException("An error occurred while assigning roles to the account.", e);
         }
     }
 
@@ -37,3 +37,4 @@ public class AccountRoleService {
         return accountRoleRepository.findByAccountId(accountId);
     }
 }
+

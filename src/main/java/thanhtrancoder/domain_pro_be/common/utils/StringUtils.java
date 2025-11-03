@@ -6,12 +6,12 @@ import java.text.Normalizer;
 public class StringUtils {
     public static String removeAccent(String input) {
         if (input == null) return null;
-        // tách base character + dấu phụ
+        // split into base character + diacritics
         String normalized = Normalizer.normalize(input, Normalizer.Form.NFD);
-        // xoá các ký tự thuộc category Mark (dấu)
+        // remove characters in the Mark category (diacritics)
         String withoutAccent = normalized.replaceAll("\\p{M}", "");
-        // nếu dùng tiếng Việt, cần xử lý ký tự đ/Đ
-        withoutAccent = withoutAccent.replace('đ', 'd').replace('Đ', 'D');
+        // handle Vietnamese-specific characters (map diacritic 'd' variants to ASCII d/D)
+        withoutAccent = withoutAccent.replace('\u0111', 'd').replace('\u0110', 'D');
         return withoutAccent;
     }
 
@@ -26,7 +26,7 @@ public class StringUtils {
         if (input == null) {
             return null;
         }
-        // Giữ lại chữ cái, số và khoảng trắng (nếu muốn) hoặc chỉ giữ chữ & số
+        // Keep letters, digits, hyphen and dot; remove other special characters
         return input.replaceAll("[^a-zA-Z0-9\\-\\.]", "");
     }
 
@@ -41,3 +41,4 @@ public class StringUtils {
         return sb.toString();
     }
 }
+

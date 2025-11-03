@@ -39,8 +39,9 @@ public class RoleController {
         RoleEntity roleCreated = roleService.create(roleEntity);
 
         return response.success(
-                "Tạo role thành công.",
+                "Role created successfully.",
                 roleCreated
         );
     }
 }
+

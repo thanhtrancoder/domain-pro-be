@@ -26,7 +26,7 @@ public class CartController {
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<ResponseCustom<Object>> addDomainToCart(@RequestBody CartDto cartDto) {
         cartService.addDomainToCart(cartDto, authService.getCurrentAccountId());
-        return res.success("Thêm domain vào giỏ hàng thành công.", null);
+        return res.success("Added domain to cart successfully.", null);
     }
 
     @GetMapping("/all")
@@ -35,20 +35,21 @@ public class CartController {
             @PageableDefault(size = 10) Pageable pageable
     ) {
         Page<CartDto> cartList = cartService.getAll(authService.getCurrentAccountId(), Pageable.unpaged());
-        return res.success("Lấy danh sách sản phẩm trong giỏ hàng thành công.", cartList);
+        return res.success("Fetched cart items successfully.", cartList);
     }
 
     @PutMapping("/update")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<ResponseCustom<CartDto>> updateCartItem(@RequestBody CartDto cartDto) {
         CartDto cart = cartService.updateCartItem(cartDto, authService.getCurrentAccountId());
-        return res.success("Cập nhật giỏ hàng thành công.", cart);
+        return res.success("Cart updated successfully.", cart);
     }
 
     @DeleteMapping("/delete/{cartId}")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<ResponseCustom<Object>> deleteCartItem(@PathVariable Long cartId) {
         cartService.deleteCartItem(cartId, authService.getCurrentAccountId());
-        return res.success("Xóa domain khỏi giỏ hàng thành công.", null);
+        return res.success("Removed domain from cart successfully.", null);
     }
 }
+

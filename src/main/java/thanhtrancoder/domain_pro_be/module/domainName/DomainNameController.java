@@ -30,7 +30,7 @@ public class DomainNameController {
         DomainNameDashboardRes domainNameDashboardRes = domainNameService.getCount(
                 authService.getCurrentAccountId()
         );
-        return res.success("Lấy số lượng tên miền thành công.", domainNameDashboardRes);
+        return res.success("Fetched domain count successfully.", domainNameDashboardRes);
     }
 
     @GetMapping("/search")
@@ -46,7 +46,7 @@ public class DomainNameController {
                 status,
                 pageable
         );
-        return res.success("Tìm kiếm tên miền thành công.", domainList);
+        return res.success("Domain search successful.", domainList);
     }
 
     @PutMapping("/update")
@@ -58,7 +58,7 @@ public class DomainNameController {
                 authService.getCurrentAccountId(),
                 domainNameDto
         );
-        return res.success("Cập nhật tên miền thành công.", domainNameUpdate);
+        return res.success("Domain updated successfully.", domainNameUpdate);
     }
 
     @GetMapping("/detail")
@@ -70,6 +70,7 @@ public class DomainNameController {
                 authService.getCurrentAccountId(),
                 domainNameId
         );
-        return res.success("Lấy thông tin tên miền thành công.", domainNameDto);
+        return res.success("Fetched domain information successfully.", domainNameDto);
     }
 }
+

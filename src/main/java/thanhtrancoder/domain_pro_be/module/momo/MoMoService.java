@@ -81,7 +81,7 @@ public class MoMoService {
     public MoMoRes createCollectionLink(CollectionLinkRequest req, Long accountId) {
         OrderDto orderDto = orderService.getDetail(Long.valueOf(req.getOrderId()), accountId);
         if (orderDto.getStatus() == ConstantValue.ORDER_PAID) {
-            throw new CustomException("Đơn hàng đã được thanh toán.");
+            throw new CustomException("The order has already been paid.");
         }
 
         // create user info
@@ -100,12 +100,12 @@ public class MoMoService {
         for (OrderItemDto orderItemDto : orderItemList) {
             Item item = new Item();
             item.setId(String.valueOf(idIndex));
-            item.setName("Tên miền: "
+            item.setName("Domain: "
                     + orderItemDto.getDomainName()
                     + orderItemDto.getDomainExtend()
-                    + " (" + orderItemDto.getPeriod() + " năm)"
+                    + " (" + orderItemDto.getPeriod() + " years)"
             );
-            item.setDescription("Thời hạn: " + orderItemDto.getPeriod() + " năm");
+            item.setDescription("Duration: " + orderItemDto.getPeriod() + " years");
 //            item.setPrice(orderItemDto.getPrice());
 //            item.setCurrency("VND");
             item.setQuantity(1);
@@ -123,7 +123,7 @@ public class MoMoService {
         collectionLinkDto.setPartnerCode(partnerCode);
         collectionLinkDto.setStoreId(storeId);
         collectionLinkDto.setAmount(orderDto.getTotalPrice());
-        collectionLinkDto.setOrderInfo("DomainPro - Thanh toán đơn hàng");
+        collectionLinkDto.setOrderInfo("DomainPro - Order payment");
         collectionLinkDto.setRedirectUrl(redirectUrl);
         collectionLinkDto.setIpnUrl(ipnUrl);
         collectionLinkDto.setRequestId(requestId);
@@ -131,12 +131,12 @@ public class MoMoService {
         collectionLinkDto.setUserInfo(userInfo);
         collectionLinkDto.setRequestType("payWithMethod");
 
-        // Tạo extraData nếu cần (ví dụ base64 của JSON)
+        // Create extraData if needed (e.g., base64 of JSON)
         if (collectionLinkDto.getExtraData() == null) {
             collectionLinkDto.setExtraData("");
         }
 
-        // Tạo signature: theo thứ tự a → z các key
+        // Create signature: keys in a to z order
         String raw = "accessKey=" + accessKey
                 + "&amount=" + collectionLinkDto.getAmount()
                 + "&extraData=" + collectionLinkDto.getExtraData()
@@ -218,7 +218,7 @@ public class MoMoService {
             // Create notification
             NotificationDto notificationDto = new NotificationDto();
             notificationDto.setType(ConstantValue.NOTIFICATION_TYPE_SUCCESS);
-            notificationDto.setTitle("Thanh toán đơn hàng " + paymentBillDto.getOrderId() + " thành công");
+            notificationDto.setTitle("Payment for order " + paymentBillDto.getOrderId() + " was successful");
             notificationDto.setContent("");
             notificationService.systemCreate(orderDto.getAccountId(), notificationDto);
 
@@ -229,20 +229,20 @@ public class MoMoService {
                     domains
             );
         } catch (Exception e) {
-            throw new QueryException("Có lỗi xảy ra khi thanh toán", e);
+            throw new QueryException("An error occurred during payment", e);
         }
     }
 
     public void handlePayment(MoMoReq moMoReq) {
         if (!validateSignature(moMoReq)) {
-            throw new CustomException("Xác thực thất bại.");
+            throw new CustomException("Authentication failed.");
         }
         processPayment(moMoReq);
     }
 
     public CheckPaymentRes checkPayment(MoMoReq moMoReq) {
         if (!validateSignature(moMoReq)) {
-            throw new CustomException("Xác thực thất bại.");
+            throw new CustomException("Authentication failed.");
         }
 
         moMoReq.setSignature(null);
@@ -300,14 +300,14 @@ public class MoMoService {
             Mac mac = Mac.getInstance("HmacSHA256");
             mac.init(new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
             byte[] raw = mac.doFinal(data.getBytes(StandardCharsets.UTF_8));
-            // chuyển sang hex (lowercase)
+            // convert to hex (lowercase)
             StringBuilder sb = new StringBuilder(raw.length * 2);
             for (byte b : raw) {
                 sb.append(String.format("%02x", b & 0xff));
             }
             return sb.toString();
         } catch (Exception e) {
-            throw new RuntimeException("Không thể tính HMAC SHA256", e);
+            throw new RuntimeException("Unable to compute HMAC SHA256", e);
         }
     }
 }

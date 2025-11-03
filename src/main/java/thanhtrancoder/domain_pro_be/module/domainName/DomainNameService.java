@@ -57,11 +57,11 @@ public class DomainNameService {
                         false
                 );
         if (domainNameEntity == null) {
-            throw new RuntimeException("Tên miền không tồn tại.");
+            throw new RuntimeException("Domain does not exist.");
         }
         if (domainNameDto.getIsAutoRenewal() == domainNameEntity.getIsAutoRenewal()
                 && domainNameDto.getIsBlock() == domainNameEntity.getIsBlock()) {
-            throw new CustomException("Tên miền không thay đổi.");
+            throw new CustomException("Domain has no changes.");
         }
 
         try {
@@ -71,7 +71,7 @@ public class DomainNameService {
             domainNameEntity.setUpdatedBy(accountId);
             domainNameRepository.save(domainNameEntity);
         } catch (Exception e) {
-            throw new QueryException("Có lỗi xảy ra khi cập nhật tên miền.", e);
+            throw new QueryException("An error occurred while updating the domain.", e);
         }
 
         return modelMapper.map(
@@ -86,7 +86,7 @@ public class DomainNameService {
                 accountId
         );
         if (domainNameEntity == null) {
-            throw new CustomException("Không tìm thấy thông tin tên miền.");
+            throw new CustomException("Domain information not found.");
         }
 
         return modelMapper.map(
@@ -101,7 +101,7 @@ public class DomainNameService {
                 accountId,
                 false
         )) {
-            throw new CustomException("Không tìm thấy thông tin tên miền.");
+            throw new CustomException("Domain information not found.");
         }
     }
 
@@ -119,7 +119,8 @@ public class DomainNameService {
             domainNameEntity.setIsDeleted(false);
             domainNameRepository.save(domainNameEntity);
         } catch (Exception e) {
-            throw new QueryException("Có lỗi xảy ra khi tạo tên miền.", e);
+            throw new QueryException("An error occurred while creating the domain.", e);
         }
     }
 }
+

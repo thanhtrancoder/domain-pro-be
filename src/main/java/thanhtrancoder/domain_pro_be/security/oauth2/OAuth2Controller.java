@@ -42,16 +42,16 @@ public class OAuth2Controller {
     public ResponseEntity<ResponseCustom<LoginRes>> me(HttpServletRequest req) {
         String token = extractTokenFromCookies(req);
         if (token == null) {
-            throw new CustomException("Không tìm thấy thông tin đăng nhập.");
+            throw new CustomException("Login information not found.");
         }
         if (!jwtUtil.validateToken(token)) {
-            throw new CustomException("Phiên đăng nhập đã hết hạn.");
+            throw new CustomException("Login session has expired.");
         }
         String id = jwtUtil.extractEmail(token);
 
         AccountEntity account = accountService.getAccountByGoogleId(id);
         if (account.getIsDeleted() == true) {
-            throw new CustomException("Tài khoản đã bị chặn.");
+            throw new CustomException("The account has been blocked.");
         }
 
         String tokenNew = jwtUtil.generateToken(account.getEmail(), account.getTokenVersion());
@@ -63,6 +63,7 @@ public class OAuth2Controller {
         loginRes.setFullname(account.getFullname());
         loginRes.setEmail(account.getEmail());
 
-        return res.success("Đăng nhập thành công.", loginRes);
+        return res.success("Login successful.", loginRes);
     }
 }
+

@@ -42,7 +42,7 @@ public class EmailService {
             helper.setText(htmlBody, true);  // true = html
             mailSender.send(message);
         } catch (MessagingException e) {
-            throw new CustomException("Có lỗi xảy ra khi gửi email.");
+            throw new CustomException("An error occurred while sending the email.");
         }
     }
 

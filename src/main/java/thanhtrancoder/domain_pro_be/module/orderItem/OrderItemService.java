@@ -29,7 +29,7 @@ public class OrderItemService {
                 orderItemEntity.getDomainName(),
                 false
         )) {
-            throw new CustomException("Tên miền đã tồn tại");
+            throw new CustomException("Domain already exists");
         }
 
         try {
@@ -38,7 +38,7 @@ public class OrderItemService {
             orderItemEntity.setIsDeleted(false);
             return orderItemRepository.save(orderItemEntity);
         } catch (Exception e) {
-            throw new QueryException("Có lỗi xảy ra khi tạo order item.", e);
+            throw new QueryException("An error occurred while creating the order item.", e);
         }
     }
 
@@ -52,3 +52,4 @@ public class OrderItemService {
                 .map(orderItem -> modelMapper.map(orderItem, OrderItemDto.class));
     }
 }
+

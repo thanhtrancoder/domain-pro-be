@@ -49,7 +49,7 @@ public class NotificationService {
             notificationEntity.setIsDeleted(false);
             notificationRepository.save(notificationEntity);
         } catch (Exception e) {
-            throw new QueryException("Có lỗi xảy ra khi tạo thông báo.", e);
+            throw new QueryException("An error occurred while creating notification.", e);
         }
     }
 

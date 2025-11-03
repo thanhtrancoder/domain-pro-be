@@ -27,8 +27,9 @@ public class RoleService {
             roleEntity.setIsDeleted(false);
             return roleRepository.save(roleEntity);
         } catch (Exception e) {
-            throw new QueryException("Có lỗi xảy ra khi tạo role.", e);
+            throw new QueryException("An error occurred while creating the role.", e);
         }
 
     }
 }
+

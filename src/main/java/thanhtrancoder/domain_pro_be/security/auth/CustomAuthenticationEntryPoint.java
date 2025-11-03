@@ -21,7 +21,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        // Cấu hình response
+        // Configure response
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         response.setCharacterEncoding("UTF-8");
@@ -29,13 +29,14 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         ResponseCustom<Objects> responseCustom = new ResponseCustom<>();
         responseCustom.setTimestamp(LocalDateTime.now());
         responseCustom.setStatus(HttpServletResponse.SC_FORBIDDEN);
-        responseCustom.setMessage("Bạn không có quyền truy cập tài nguyên này.");
+        responseCustom.setMessage("You do not have permission to access this resource.");
 
         ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule()); // xử lý LocalDateTime
+        objectMapper.registerModule(new JavaTimeModule()); // handle LocalDateTime
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         objectMapper.writerWithDefaultPrettyPrinter()
                 .writeValue(response.getOutputStream(), responseCustom);
         response.getOutputStream().flush();
     }
 }
+

@@ -22,7 +22,7 @@ public class JwtUtil {
             byte[] keyBytes = MessageDigest.getInstance("SHA-256").digest(secret.getBytes());
             return new SecretKeySpec(keyBytes, SignatureAlgorithm.HS256.getJcaName());
         } catch (Exception e) {
-            throw new CustomException("Có lỗi xảy ra trong quá trình đăng nhập.");
+            throw new CustomException("An error occurred during login.");
         }
 
     }

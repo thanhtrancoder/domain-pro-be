@@ -49,7 +49,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                     username = jwtUtil.extractEmail(jwt);
                     tokenVersion = jwtUtil.extractTokenVersion(jwt);
                 } catch (Exception e) {
-                    // Log lỗi nếu cần
+                    // Log error if needed
                 }
             }
 
@@ -57,11 +57,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 CustomUserDetails userDetails = userDetailsService.loadUserByEmail(username);
 
                 if (!jwtUtil.validateToken(jwt)) {
-                    throw new LoginSessionExpired("Phiên đăng nhập đã hết hạn");
+                    throw new LoginSessionExpired("Login session has expired");
                 }
 
                 if (tokenVersion != userDetails.getTokenVersion()) {
-                    throw new LoginSessionExpired("Phiên đăng nhập đã hết hạn");
+                    throw new LoginSessionExpired("Login session has expired");
                 }
 
                 UsernamePasswordAuthenticationToken authToken =

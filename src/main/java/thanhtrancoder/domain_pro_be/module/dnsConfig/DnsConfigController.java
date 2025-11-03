@@ -36,7 +36,7 @@ public class DnsConfigController {
                 domainNameId,
                 Pageable.unpaged()
         );
-        return res.success("Lấy danh sách cấu hình DNS thành công.", dnsConfigList);
+        return res.success("Fetched DNS configurations successfully.", dnsConfigList);
     }
 
     @PostMapping("/create")
@@ -48,7 +48,7 @@ public class DnsConfigController {
                 authService.getCurrentAccountId(),
                 dnsConfigDto
         );
-        return res.success("Tạo cấu hình DNS thành công.", dnsConfigCreate);
+        return res.success("DNS configuration created successfully.", dnsConfigCreate);
     }
 
     // update
@@ -61,7 +61,7 @@ public class DnsConfigController {
                 authService.getCurrentAccountId(),
                 dnsConfigDto
         );
-        return res.success("Cập nhật cấu hình DNS thành công.", dnsConfigUpdate);
+        return res.success("DNS configuration updated successfully.", dnsConfigUpdate);
     }
 
     // delete
@@ -69,7 +69,7 @@ public class DnsConfigController {
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<ResponseCustom<Object>> delete(@PathVariable Long dnsConfigId) {
         dnsConfigService.delete(authService.getCurrentAccountId(), dnsConfigId);
-        return res.success("Xóa cấu hình DNS thành công.", null);
+        return res.success("DNS configuration deleted successfully.", null);
     }
 
     @PatchMapping("/match")
@@ -81,6 +81,7 @@ public class DnsConfigController {
                 authService.getCurrentAccountId(),
                 req
         );
-        return res.success("Cập nhật cấu hình DNS thành công.", dnsConfigUpdate);
+        return res.success("DNS configuration updated successfully.", dnsConfigUpdate);
     }
 }
+

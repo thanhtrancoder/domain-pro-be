@@ -42,9 +42,9 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
         ResponseCookie cookie = ResponseCookie.from("JWT", token)
                 .httpOnly(true)
-                .secure(false)           // true khi production + HTTPS
+                .secure(false)           // set true in production with HTTPS
                 .path("/")
-                .maxAge(2 * 60)  // tuổi cookie
+                .maxAge(2 * 60)          // cookie age (seconds)
                 .sameSite("Lax")
                 .build();
 
@@ -52,3 +52,4 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         response.sendRedirect(successUrl);
     }
 }
+

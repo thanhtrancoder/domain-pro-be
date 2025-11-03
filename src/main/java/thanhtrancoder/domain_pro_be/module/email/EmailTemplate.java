@@ -29,7 +29,7 @@ public class EmailTemplate {
     public EmailBody passwordChanged(String userName) {
         userName = userName == null ? "" : userName;
         EmailBody emailBody = new EmailBody();
-        emailBody.setSubject("DomainPro – Your password has been changed");
+        emailBody.setSubject("DomainPro - Your password has been changed");
         emailBody.setBody(
                 "<!DOCTYPE html>"
                         + "<html lang=\"en\">"
@@ -49,7 +49,7 @@ public class EmailTemplate {
     public EmailBody forgotPasswordOtp(String userName, String otpCode, int validMinutes) {
         userName = userName == null ? "" : userName;
         EmailBody emailBody = new EmailBody();
-        emailBody.setSubject("DomainPro – Password Reset Code");
+        emailBody.setSubject("DomainPro - Password Reset Code");
         emailBody.setBody(
                 "<!DOCTYPE html>"
                         + "<html lang=\"en\">"
@@ -74,7 +74,7 @@ public class EmailTemplate {
                                          Map<String, Integer> domainsWithYears) {
         userName = userName == null ? "" : userName;
         EmailBody emailBody = new EmailBody();
-        emailBody.setSubject("DomainPro – Your Order Payment was Successful");
+        emailBody.setSubject("DomainPro - Your Order Payment was Successful");
 
         StringBuilder body = new StringBuilder();
         body.append("<!DOCTYPE html>")
@@ -126,11 +126,11 @@ public class EmailTemplate {
         emailBody.setBody(
                 """
                         <!DOCTYPE html>
-                        <html lang="vi">
+                        <html lang="en">
                         <head>
                             <meta charset="UTF-8">
                             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                            <title>Xác nhận đăng ký nhận tin</title>
+                            <title>Newsletter Subscription Confirmation</title>
                             <style>
                                 body {
                                     font-family: Arial, sans-serif;
@@ -192,17 +192,17 @@ public class EmailTemplate {
                         <body>
                             <div class="container">
                                 <div class="header">
-                                    <h1>Chào mừng đến với %s!</h1>
+                                    <h1>Welcome to %s!</h1>
                                 </div>
                                 <div class="content">
-                                    <h2>Cảm ơn bạn đã đăng ký!</h2>
-                                    <p>Chào bạn %s,</p>
-                                    <p>Bạn đã đăng ký thành công để nhận những thông tin mới nhất, các chương trình khuyến mãi hấp dẫn và những mẹo hữu ích về tên miền, hosting từ chúng tôi.</p>
-                                    <p>Chúng tôi cam kết sẽ chỉ gửi những email thực sự giá trị và không làm phiền bạn.</p>
-                                    <p>Hãy khám phá thêm các dịch vụ của chúng tôi:</p>
-                                    <a href="%s" class="cta-button">Khám Phá Ngay</a>
-                                    <p>Nếu bạn có bất kỳ câu hỏi nào, đừng ngần ngại trả lời email này nhé.</p>
-                                    <p>Trân trọng,<br>Đội ngũ %s</p>
+                                    <h2>Thank you for subscribing!</h2>
+                                    <p>Hello %s,</p>
+                                    <p>You have successfully subscribed to receive the latest updates, promotions, and helpful tips about domains and hosting from us.</p>
+                                    <p>We are committed to sending only valuable emails and not spamming your inbox.</p>
+                                    <p>Explore more of our services:</p>
+                                    <a href="%s" class="cta-button">Explore Now</a>
+                                    <p>If you have any questions, feel free to reply to this email.</p>
+                                    <p>Best regards,<br>The %s Team</p>
                                 </div>
                                 <div class="footer">
                                     <p>&copy; 2025 %s. All rights reserved.</p>
@@ -215,3 +215,4 @@ public class EmailTemplate {
         return emailBody;
     }
 }
+

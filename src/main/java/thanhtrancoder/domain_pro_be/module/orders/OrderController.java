@@ -28,6 +28,7 @@ public class OrderController {
     public ResponseEntity<ResponseCustom<OrderCreateRes>> createOrder(@RequestBody OrderDto orderDto) {
         OrderCreateRes orderCreateRes = orderService.createOrder(orderDto, authService.getCurrentAccountId());
 
-        return res.success("Tạo đơn hàng thành công.", orderCreateRes);
+        return res.success("Order created successfully.", orderCreateRes);
     }
 }
+

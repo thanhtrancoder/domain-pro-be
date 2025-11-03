@@ -45,7 +45,7 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();  // thuật toán hash bcrypt
+        return new BCryptPasswordEncoder();  // bcrypt hash algorithm
     }
 
     @Bean

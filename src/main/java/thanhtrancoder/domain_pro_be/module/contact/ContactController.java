@@ -21,6 +21,6 @@ public class ContactController {
     @PostMapping("/create")
     public ResponseEntity<ResponseCustom<Object>> createContact(@RequestBody ContactDto contactDto) {
         contactService.createContact(contactDto);
-        return res.success("Liên hệ thành công.", null);
+        return res.success("Contact submitted successfully.", null);
     }
 }

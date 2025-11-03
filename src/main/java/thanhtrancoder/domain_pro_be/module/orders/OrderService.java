@@ -46,12 +46,12 @@ public class OrderService {
     public OrderCreateRes createOrder(OrderDto orderDto, Long accountId) {
         if (orderDto.getFullname() == null
                 || orderDto.getFullname().trim().isEmpty()) {
-            throw new CustomException("Tên khách hàng không được để trống.");
+            throw new CustomException("Customer name must not be empty.");
         }
         if (orderDto.getEmail() == null
                 || orderDto.getEmail().trim().isEmpty()
                 || !RegexUtils.EMAIL_REGEX.matcher(orderDto.getEmail().trim()).matches()) {
-            throw new CustomException("Email không hợp lệ.");
+            throw new CustomException("Invalid email.");
         }
 
         try {
@@ -77,7 +77,7 @@ public class OrderService {
             Page<CartDto> cartList = cartService.getAll(accountId, Pageable.unpaged());
             for (CartDto cartDto : cartList) {
                 if (cartDto.getIsAvailable() == false) {
-                    throw new CustomException("Vui lòng xóa tên miền không khả dụng trong giỏ hàng.");
+                    throw new CustomException("Please remove unavailable domains from the cart.");
                 }
 
                 OrderItemEntity orderItem = new OrderItemEntity();
@@ -109,7 +109,7 @@ public class OrderService {
             if (e instanceof CustomException) {
                 throw new CustomException(e.getMessage());
             } else {
-                throw new QueryException("Có lỗi xảy ra khi tạo đơn hàng.", e);
+                throw new QueryException("An error occurred while creating the order.", e);
             }
         }
     }
@@ -118,13 +118,13 @@ public class OrderService {
     public OrderDto updateOrderStatus(Long orderId, Integer status, Long accountId) {
         OrderEntity order = orderRepository.findOneByOrderIdAndIsDeleted(orderId, false);
         if (order == null) {
-            throw new CustomException("Không tìm thấy thông tin đơn hàng.");
+            throw new CustomException("Order information not found.");
         }
         if (status != ConstantValue.ORDER_PAID) {
-            throw new CustomException("Trạng thái đơn hàng không hợp lệ");
+            throw new CustomException("Invalid order status");
         }
         if (order.getStatus() == ConstantValue.ORDER_PAID) {
-            throw new CustomException("Không được phép cập nhật trạng thái đơn hàng này.");
+            throw new CustomException("Not allowed to update the status of this order.");
         }
 
         try {
@@ -134,7 +134,7 @@ public class OrderService {
             orderRepository.save(order);
             return modelMapper.map(order, OrderDto.class);
         } catch (Exception e) {
-            throw new QueryException("Có lỗi xảy ra khi cập nhật trạng thái đơn hàng.", e);
+            throw new QueryException("An error occurred while updating the order status.", e);
         }
     }
 
@@ -145,8 +145,9 @@ public class OrderService {
                 false
         );
         if (order == null) {
-            throw new CustomException("Không tìm thấy thông tin đơn hàng.");
+            throw new CustomException("Order information not found.");
         }
         return modelMapper.map(order, OrderDto.class);
     }
 }
+

@@ -31,7 +31,7 @@ public class DomainExtendController {
         DomainExtendEntity domainExtend = domainExtendService.adminInsert(
                 domainExtendDto,
                 authService.getCurrentAccountId());
-        return res.success("Tạo domain extend thành công.", domainExtend);
+        return res.success("Domain extension created successfully.", domainExtend);
     }
 
     @GetMapping("/search")
@@ -41,7 +41,7 @@ public class DomainExtendController {
 
         Page<DomainExtendDto> result = domainExtendService.searchAvailableDomainExtend(domainName, pageable);
 
-        return res.success("Tìm kiếm thành công.", result);
+        return res.success("Search successful.", result);
     }
 
     @GetMapping("popular")
@@ -49,6 +49,7 @@ public class DomainExtendController {
 
         List<DomainExtendDto> result = domainExtendService.getPopularDomainExtend();
 
-        return res.success("Lấy các domain extend phổ biến thành công.", result);
+        return res.success("Fetched popular domain extensions successfully.", result);
     }
 }
+

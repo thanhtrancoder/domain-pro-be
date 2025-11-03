@@ -36,7 +36,7 @@ public class PasswordResetsService {
 
             return otp;
         } catch (Exception e) {
-            throw new QueryException("Có lỗi xảy ra khi tạo password reset.", e);
+            throw new QueryException("An error occurred while creating the password reset.", e);
         }
     }
 
@@ -48,13 +48,13 @@ public class PasswordResetsService {
                 false
         );
         if (passwordResetsEntity == null) {
-            throw new CustomException("Mã OTP không chính xác.");
+            throw new CustomException("Invalid OTP code.");
         }
         if (passwordResetsEntity.getLimitCount() <= 0) {
-            throw new CustomException("Mã OTP không chính xác.");
+            throw new CustomException("Invalid OTP code.");
         }
         if (passwordResetsEntity.getExpiresAt().isBefore(LocalDateTime.now())) {
-            throw new CustomException("Mã OTP không chính xác.");
+            throw new CustomException("Invalid OTP code.");
         }
         if (!passwordResetsEntity.getOtp().equals(otp)) {
             try {
@@ -65,7 +65,7 @@ public class PasswordResetsService {
                 passwordResetsRepository.save(passwordResetsEntity);
                 return false;
             } catch (Exception e) {
-                throw new QueryException("Có lỗi xảy ra khi áp dụng password reset.", e);
+                throw new QueryException("An error occurred while applying the password reset.", e);
             }
         }
 
@@ -76,7 +76,8 @@ public class PasswordResetsService {
             passwordResetsRepository.save(passwordResetsEntity);
             return true;
         } catch (Exception e) {
-            throw new QueryException("Có lỗi xảy ra khi áp dụng password reset.", e);
+            throw new QueryException("An error occurred while applying the password reset.", e);
         }
     }
 }
+

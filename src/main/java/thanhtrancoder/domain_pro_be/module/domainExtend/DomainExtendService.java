@@ -29,7 +29,7 @@ public class DomainExtendService {
                 domainExtendDto.getName(),
                 false)
         ) {
-            throw new CustomException("Tên domain extend đã tồn tại.");
+            throw new CustomException("Domain extension name already exists.");
         }
         try {
             DomainExtendEntity domainExtend = modelMapper.map(
@@ -41,7 +41,7 @@ public class DomainExtendService {
             domainExtend.setIsDeleted(false);
             return domainExtendRepository.save(domainExtend);
         } catch (Exception e) {
-            throw new QueryException("Có lỗi xảy ra khi tạo domain extend.", e);
+            throw new QueryException("An error occurred while creating the domain extension.", e);
         }
     }
 
@@ -78,3 +78,4 @@ public class DomainExtendService {
         ).collect(Collectors.toList());
     }
 }
+

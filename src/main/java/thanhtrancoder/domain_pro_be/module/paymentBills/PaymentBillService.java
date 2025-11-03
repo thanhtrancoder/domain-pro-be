@@ -23,7 +23,7 @@ public class PaymentBillService {
                 paymentBillDto.getOrderId(),
                 false)
         ) {
-            throw new CustomException("Đơn hàng này đã có hóa đơn thanh toán.");
+            throw new CustomException("This order already has a payment invoice.");
         }
         try {
             PaymentBillEntity paymentBillEntity = modelMapper.map(
@@ -35,7 +35,7 @@ public class PaymentBillService {
             paymentBillEntity.setIsDeleted(false);
             paymentBillRepository.save(paymentBillEntity);
         } catch (Exception e) {
-            throw new QueryException("Có lỗi xảy ra khi tạo hóa đơn thanh toán.", e);
+            throw new QueryException("An error occurred while creating the payment invoice.", e);
         }
     }
 
@@ -45,7 +45,7 @@ public class PaymentBillService {
                 false
         );
         if (paymentBillEntity == null) {
-            throw new CustomException("Không tìm thấy thông tin hóa đơn thanh toán.");
+            throw new CustomException("Payment invoice information not found.");
         }
         return modelMapper.map(paymentBillEntity, PaymentBillDto.class);
     }
@@ -56,7 +56,7 @@ public class PaymentBillService {
                 false
         );
         if (paymentBillEntity == null) {
-            throw new CustomException("Không tìm thấy thông tin hóa đơn thanh toán.");
+            throw new CustomException("Payment invoice information not found.");
         }
         return paymentBillEntity;
     }
@@ -69,3 +69,4 @@ public class PaymentBillService {
         return paymentBillEntity;
     }
 }
+

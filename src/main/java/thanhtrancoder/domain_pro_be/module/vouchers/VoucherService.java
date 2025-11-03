@@ -22,19 +22,19 @@ public class VoucherService {
     public VoucherApplyRes applyVoucher(String code, Long amount) {
         VoucherEntity voucher = voucherRepository.findOneByCodeAndIsDeleted(code, false);
         if (voucher == null) {
-            throw new CustomException("Không tìm thấy thông tin voucher.");
+            throw new CustomException("Voucher not found.");
         }
         if (voucher.getMinOrderValue() > amount) {
-            throw new CustomException("Chưa đạt giá trị đơn hàng tối thiểu để áp dụng voucher.");
+            throw new CustomException("Minimum order value not met to apply the voucher.");
         }
         if (voucher.getUsagePerUser() > voucher.getUsageLimit()) {
-            throw new CustomException("Voucher đã hết lượt sử dụng.");
+            throw new CustomException("Voucher usage limit reached.");
         }
         if (voucher.getStartAt().toLocalDate().isAfter(LocalDate.now())) {
-            throw new CustomException("Voucher chưa bắt đầu áp dụng.");
+            throw new CustomException("Voucher has not started yet.");
         }
         if (voucher.getExpiresAt().toLocalDate().isBefore(LocalDate.now())) {
-            throw new CustomException("Voucher đã hết hạn áp dụng.");
+            throw new CustomException("Voucher has expired.");
         }
 
         Long discountPriceValue = 0L;
@@ -61,13 +61,13 @@ public class VoucherService {
     public void updateUsage(String code) {
         VoucherEntity voucher = voucherRepository.findOneByCodeAndIsDeleted(code, false);
         if (voucher == null) {
-            throw new CustomException("Không tìm thấy thông tin voucher.");
+            throw new CustomException("Voucher not found.");
         }
         try {
             voucher.setUsagePerUser(voucher.getUsagePerUser() + 1);
             voucherRepository.save(voucher);
         } catch (Exception e) {
-            throw new QueryException("Có lỗi xảy ra trong quá trình cập nhật voucher.", e);
+            throw new QueryException("An error occurred while updating the voucher.", e);
         }
 
     }

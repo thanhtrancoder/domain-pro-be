@@ -26,7 +26,7 @@ public class GlobalExceptionHandler {
     ) {
         logger.error("Access denied");
 
-        return res.accessDenied("Bạn không có quyền truy cập tài nguyên này.");
+        return res.accessDenied("You do not have permission to access this resource.");
     }
 
     @ExceptionHandler(CustomException.class)
@@ -50,7 +50,7 @@ public class GlobalExceptionHandler {
             HttpMessageNotReadableException exception
     ) {
         logger.error("Request error", exception);
-        return res.badRequest("Nội dung yêu cầu không hợp lệ.");
+        return res.badRequest("Invalid request content.");
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
@@ -58,7 +58,7 @@ public class GlobalExceptionHandler {
             MissingServletRequestParameterException exception
     ) {
         logger.error("Request error", exception);
-        return res.badRequest("Nội dung yêu cầu không hợp lệ.");
+        return res.badRequest("Invalid request content.");
     }
 
     @ExceptionHandler(ExternalException.class)
@@ -66,12 +66,13 @@ public class GlobalExceptionHandler {
             ExternalException exception
     ) {
         logger.error(exception.getMessage() + ", data = {}", exception.getData(), exception);
-        return res.badRequest("Có lỗi xảy ra trong quá trình xử lý.");
+        return res.badRequest("An error occurred during processing.");
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ResponseCustom<Object>> handleException(Exception exception) {
         logger.error("Server error", exception);
-        return res.error("Có lỗi xảy ra trong quá trình xử lý.");
+        return res.error("An error occurred during processing.");
     }
 }
+

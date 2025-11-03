@@ -50,13 +50,13 @@ public class DnsConfigService {
     public DnsConfigDto create(Long accountId, DnsConfigDto dnsConfigDto) {
         domainNameService.checkExists(accountId, dnsConfigDto.getDomainNameId());
         if (dnsConfigDto.getType() == null || dnsConfigDto.getType().isEmpty()) {
-            throw new CustomException("Loại cấu hình không hợp lệ: " + getDnsConfigString(dnsConfigDto));
+            throw new CustomException("Invalid configuration type: " + getDnsConfigString(dnsConfigDto));
         }
         if (dnsConfigDto.getHost() == null || dnsConfigDto.getHost().isEmpty()) {
-            throw new CustomException("Máy chủ không được bỏ trống: " + getDnsConfigString(dnsConfigDto));
+            throw new CustomException("Host must not be empty: " + getDnsConfigString(dnsConfigDto));
         }
         if (dnsConfigDto.getValue() == null || dnsConfigDto.getValue().isEmpty()) {
-            throw new CustomException("Giá trị không được bỏ trống: " + getDnsConfigString(dnsConfigDto));
+            throw new CustomException("Value must not be empty: " + getDnsConfigString(dnsConfigDto));
         }
         if (dnsConfigDto.getTtl() == null || dnsConfigDto.getTtl() < 0) {
             dnsConfigDto.setTtl(3600);
@@ -67,7 +67,7 @@ public class DnsConfigService {
                 DnsType.valueOf(dnsConfigDto.getType()),
                 false
         )) {
-            throw new CustomException("Cấu hình DNS đã tồn tại (không được trùng loại và tên máy chủ): " + getDnsConfigString(dnsConfigDto));
+            throw new CustomException("DNS configuration already exists (type and host must be unique): " + getDnsConfigString(dnsConfigDto));
         }
 
         try {
@@ -80,7 +80,7 @@ public class DnsConfigService {
             dnsConfigRepository.save(dnsConfigEntity);
             return modelMapper.map(dnsConfigEntity, DnsConfigDto.class);
         } catch (Exception e) {
-            throw new QueryException("Có lỗi xảy ra khi tạo cấu hình DNS.", e);
+            throw new QueryException("An error occurred while creating DNS configuration.", e);
         }
     }
 
@@ -88,13 +88,13 @@ public class DnsConfigService {
     public DnsConfigDto update(Long accountId, DnsConfigDto dnsConfigDto) {
         domainNameService.checkExists(accountId, dnsConfigDto.getDomainNameId());
         if (dnsConfigDto.getType() == null || dnsConfigDto.getType().isEmpty()) {
-            throw new CustomException("Loại cấu hình không hợp lệ: " + getDnsConfigString(dnsConfigDto));
+            throw new CustomException("Invalid configuration type: " + getDnsConfigString(dnsConfigDto));
         }
         if (dnsConfigDto.getHost() == null || dnsConfigDto.getHost().isEmpty()) {
-            throw new CustomException("Máy chủ không được bỏ trống: " + getDnsConfigString(dnsConfigDto));
+            throw new CustomException("Host must not be empty: " + getDnsConfigString(dnsConfigDto));
         }
         if (dnsConfigDto.getValue() == null || dnsConfigDto.getValue().isEmpty()) {
-            throw new CustomException("Giá trị không được bỏ trống: " + getDnsConfigString(dnsConfigDto));
+            throw new CustomException("Value must not be empty: " + getDnsConfigString(dnsConfigDto));
         }
         if (dnsConfigDto.getTtl() == null || dnsConfigDto.getTtl() < 0) {
             dnsConfigDto.setTtl(3600);
@@ -108,7 +108,7 @@ public class DnsConfigService {
         );
 
         if (dnsConfigEntityList.size() > 2) {
-            throw new CustomException("Cấu hình DNS đã tồn tại (không được trùng loại và tên máy chủ): " + getDnsConfigString(dnsConfigDto));
+            throw new CustomException("DNS configuration already exists (type and host must be unique): " + getDnsConfigString(dnsConfigDto));
         }
 
         DnsConfigEntity dnsConfigEntity = dnsConfigRepository.findOneByDnsConfigIdAndIsDeleted(
@@ -116,7 +116,7 @@ public class DnsConfigService {
                 false
         );
         if (dnsConfigEntity == null) {
-            throw new CustomException("Không tìm thấy thông tin cấu hình DNS.");
+            throw new CustomException("DNS configuration not found.");
         }
 
         try {
@@ -128,7 +128,7 @@ public class DnsConfigService {
             dnsConfigRepository.save(dnsConfigEntity);
             return modelMapper.map(dnsConfigEntity, DnsConfigDto.class);
         } catch (Exception e) {
-            throw new QueryException("Có lỗi xảy ra khi cập nhật cấu hình DNS.", e);
+            throw new QueryException("An error occurred while updating DNS configuration.", e);
         }
     }
 
@@ -136,7 +136,7 @@ public class DnsConfigService {
     public void delete(Long accountId, Long dnsConfigId) {
         Integer checkAccount = dnsConfigRepository.checkAccount(accountId, dnsConfigId);
         if (checkAccount == 0) {
-            throw new CustomException("Không tìm thấy thông tin cấu hình DNS.");
+            throw new CustomException("DNS configuration not found.");
         }
 
         DnsConfigEntity dnsConfigEntity = dnsConfigRepository.findOneByDnsConfigIdAndIsDeleted(
@@ -144,7 +144,7 @@ public class DnsConfigService {
                 false
         );
         if (dnsConfigEntity == null) {
-            throw new CustomException("Không tìm thấy thông tin cấu hình DNS.");
+            throw new CustomException("DNS configuration not found.");
         }
 
         try {
@@ -153,7 +153,7 @@ public class DnsConfigService {
             dnsConfigEntity.setUpdatedBy(accountId);
             dnsConfigRepository.save(dnsConfigEntity);
         } catch (Exception e) {
-            throw new QueryException("Có lỗi xảy ra khi xóa cấu hình DNS.", e);
+            throw new QueryException("An error occurred while deleting DNS configuration.", e);
         }
     }
 
@@ -179,7 +179,7 @@ public class DnsConfigService {
             if (e instanceof CustomException || e instanceof QueryException) {
                 throw new QueryException(e.getMessage(), e);
             }
-            throw new QueryException("Có lỗi xảy ra khi cập nhật cấu hình DNS.", e);
+            throw new QueryException("An error occurred while updating DNS configuration.", e);
         }
     }
 }

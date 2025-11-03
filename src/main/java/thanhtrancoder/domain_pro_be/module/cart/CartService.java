@@ -31,7 +31,7 @@ public class CartService {
     @Transactional
     public void addDomainToCart(CartDto cartDto, Long createdBy) {
         if (domainNameService.isAvailableDomain(cartDto.getDomainName(), cartDto.getDomainExtendId())) {
-            throw new CustomException("Domain đã được đăng ký.");
+            throw new CustomException("Domain has already been registered.");
         }
         String domainNameWithoutAccent = StringUtils.removeAccent(cartDto.getDomainName());
         String domainNameWithoutWhitespace = StringUtils.removeAllWhitespace(domainNameWithoutAccent);
@@ -60,7 +60,7 @@ public class CartService {
             cartEntity.setIsDeleted(false);
             cartRepository.save(cartEntity);
         } catch (Exception e) {
-            throw new QueryException("Có lỗi xảy ra khi thêm domain vào giỏ hàng.", e);
+            throw new QueryException("An error occurred while adding the domain to the cart.", e);
         }
     }
 
@@ -72,7 +72,7 @@ public class CartService {
     @Transactional
     public CartDto updateCartItem(CartDto cartDto, Long accountId) {
         if (cartDto.getPeriod() < 1) {
-            throw new CustomException("Số lượng phải lớn hơn 0.");
+            throw new CustomException("Quantity must be greater than 0.");
         }
         CartEntity cart = cartRepository.findOneByCartIdAndAccountIdAndIsDeleted(
                 cartDto.getCartId(),
@@ -80,7 +80,7 @@ public class CartService {
                 false
         );
         if (cart == null) {
-            throw new CustomException("Không tìm thấy thông tin trong giỏ hàng.");
+            throw new CustomException("Cart item not found.");
         }
         if (cart.getPeriod() != cartDto.getPeriod()) {
             try {
@@ -89,7 +89,7 @@ public class CartService {
                 cart.setUpdatedAt(LocalDateTime.now());
                 cartRepository.save(cart);
             } catch (Exception e) {
-                throw new QueryException("Có lỗi xảy ra khi cập nhật số lượng trong giỏ hàng.", e);
+                throw new QueryException("An error occurred while updating quantity in the cart.", e);
             }
         }
         DomainPriceQuery domainPriceQuery = domainExtendService.getPrice(
@@ -112,7 +112,7 @@ public class CartService {
                 false
         );
         if (cart == null) {
-            throw new CustomException("Không tìm thấy thông tin trong giỏ hàng.");
+            throw new CustomException("Cart item not found.");
         }
         try {
             cart.setIsDeleted(true);
@@ -120,7 +120,7 @@ public class CartService {
             cart.setUpdatedAt(LocalDateTime.now());
             cartRepository.save(cart);
         } catch (Exception e) {
-            throw new QueryException("Có lỗi xảy ra khi xóa domain khỏi giỏ hàng.", e);
+            throw new QueryException("An error occurred while removing the domain from the cart.", e);
         }
     }
 
@@ -129,8 +129,9 @@ public class CartService {
         try {
             cartRepository.deleteCartItemByAccount(accountId);
         } catch (Exception e) {
-            throw new QueryException("Có lỗi xảy ra khi làm mới giỏ hàng.", e);
+            throw new QueryException("An error occurred while refreshing the cart.", e);
         }
 
     }
 }
+

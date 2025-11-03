@@ -27,13 +27,14 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
         ResponseCustom<Objects> responseCustom = new ResponseCustom<>();
         responseCustom.setTimestamp(LocalDateTime.now());
         responseCustom.setStatus(HttpServletResponse.SC_FORBIDDEN);
-        responseCustom.setMessage("Bạn không có quyền truy cập tài nguyên này.");
+        responseCustom.setMessage("You do not have permission to access this resource.");
 
         ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule()); // xử lý LocalDateTime
+        objectMapper.registerModule(new JavaTimeModule()); // handle LocalDateTime
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         objectMapper.writerWithDefaultPrettyPrinter()
                 .writeValue(response.getOutputStream(), responseCustom);
         response.getOutputStream().flush();
     }
 }
+

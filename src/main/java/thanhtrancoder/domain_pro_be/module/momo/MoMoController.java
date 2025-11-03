@@ -31,7 +31,7 @@ public class MoMoController {
                 req, authService.getCurrentAccountId()
         );
 
-        return res.success("Tạo link thanh toán thành công", moMoRes);
+        return res.success("Payment link created successfully.", moMoRes);
     }
 
     @PostMapping("/ipn")
@@ -43,6 +43,7 @@ public class MoMoController {
     @PostMapping("/check")
     public ResponseEntity<ResponseCustom<CheckPaymentRes>> checkPayment(@RequestBody MoMoReq moMoReq) {
         CheckPaymentRes payment = momoService.checkPayment(moMoReq);
-        return res.success("Thanh toán thành công.", payment);
+        return res.success("Payment successful.", payment);
     }
 }
+
