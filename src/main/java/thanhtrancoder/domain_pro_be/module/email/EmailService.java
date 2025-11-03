@@ -25,7 +25,7 @@ public class EmailService {
     @Value("${frontend.origin}")
     private String frontendOrigin;
 
-    private void sendSimpleEmail(String to, String subject, String text) {
+    public void sendSimpleEmail(String to, String subject, String text) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
         message.setSubject(subject);
