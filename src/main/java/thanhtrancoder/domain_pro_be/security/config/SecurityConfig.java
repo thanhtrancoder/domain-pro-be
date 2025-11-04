@@ -31,8 +31,14 @@ import java.util.List;
 public class SecurityConfig {
     @Value("${oauth2.login.success-url}")
     private String successUrl;
-    @Value("${frontend.origin}")
-    private String frontendOrigin;
+    @Value("${frontend.user.origin}")
+    private String frontendUserOrigin;
+    @Value("${frontend.admin.origin}")
+    private String frontendAdminOrigin;
+    @Value("${frontend.portfolio.origin}")
+    private String frontendPortfolioOrigin;
+    @Value("${frontend.test.origin}")
+    private String frontendTestOrigin;
 
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
@@ -59,7 +65,12 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of(frontendOrigin));
+        config.setAllowedOrigins(List.of(
+                frontendUserOrigin,
+                frontendAdminOrigin,
+                frontendPortfolioOrigin,
+                frontendTestOrigin
+        ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
