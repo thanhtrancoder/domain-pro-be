@@ -22,8 +22,8 @@ public class EmailService {
     @Autowired
     private AccountService accountService;
 
-    @Value("${frontend.origin}")
-    private String frontendOrigin;
+    @Value("${frontend.user.origin}")
+    private String frontendUserOrigin;
 
     public void sendSimpleEmail(String to, String subject, String text) {
         SimpleMailMessage message = new SimpleMailMessage();
@@ -87,7 +87,7 @@ public class EmailService {
         EmailBody emailBody = emailTemplate.registrationNewsSuccess(
                 email,
                 "DomainPro",
-                frontendOrigin,
+                frontendUserOrigin,
                 "https://domainpro.com/unsubscribe"
         );
         sendHtmlEmail(email, emailBody.getSubject(), emailBody.getBody());
