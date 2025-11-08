@@ -42,6 +42,7 @@ public class AccountService {
         }
 
         try {
+            account.setTokenVersion(1);
             account.setCreatedAt(LocalDateTime.now());
             account.setCreatedBy(0L);
             account.setIsDeleted(false);
