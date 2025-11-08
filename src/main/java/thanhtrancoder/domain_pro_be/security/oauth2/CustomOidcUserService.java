@@ -23,7 +23,7 @@ public class CustomOidcUserService extends OidcUserService {
     }
 
     private OidcUser processOidcUser(OidcUserRequest userRequest, OidcUser oidcUser) {
-        Map<String,Object> attrs = oidcUser.getAttributes();
+        Map<String, Object> attrs = oidcUser.getAttributes();
         String id = (String) attrs.get("sub");
         String email = (String) attrs.get("email");
         String name = (String) attrs.get("name");
@@ -34,6 +34,7 @@ public class CustomOidcUserService extends OidcUserService {
             account.setGoogleId(id);
             account.setEmail(email);
             account.setFullname(name);
+            account.setAvatar(avatarUrl);
             account.setIsVerify(true);
             accountService.create(account);
         }
