@@ -40,5 +40,12 @@ public class StringUtils {
         }
         return sb.toString();
     }
+
+    public static String getEmailUsername(String email) {
+        if (email == null || !email.contains("@")) {
+            return null;
+        }
+        return email.substring(0, email.indexOf("@"));
+    }
 }
 

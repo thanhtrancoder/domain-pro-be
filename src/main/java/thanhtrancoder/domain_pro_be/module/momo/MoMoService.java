@@ -130,6 +130,7 @@ public class MoMoService {
         collectionLinkDto.setItems(items);
         collectionLinkDto.setUserInfo(userInfo);
         collectionLinkDto.setRequestType("payWithMethod");
+        collectionLinkDto.setLang("en");
 
         // Create extraData if needed (e.g., base64 of JSON)
         if (collectionLinkDto.getExtraData() == null) {

@@ -8,18 +8,26 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import thanhtrancoder.domain_pro_be.common.exceptions.QueryException;
+import thanhtrancoder.domain_pro_be.common.utils.ConstantValue;
 import thanhtrancoder.domain_pro_be.common.utils.RegexUtils;
+import thanhtrancoder.domain_pro_be.common.utils.StringUtils;
 import thanhtrancoder.domain_pro_be.module.account.AccountEntity;
 import thanhtrancoder.domain_pro_be.module.account.AccountService;
 import thanhtrancoder.domain_pro_be.module.account.dto.AccountProfileRes;
 import thanhtrancoder.domain_pro_be.module.account.dto.AccountUpdateReq;
+import thanhtrancoder.domain_pro_be.module.domainName.DomainNameService;
+import thanhtrancoder.domain_pro_be.module.domainName.dto.DomainNameDto;
 import thanhtrancoder.domain_pro_be.module.email.EmailService;
+import thanhtrancoder.domain_pro_be.module.notification.NotificationService;
+import thanhtrancoder.domain_pro_be.module.notification.dto.NotificationDto;
 import thanhtrancoder.domain_pro_be.module.passwordResets.PasswordResetsService;
 import thanhtrancoder.domain_pro_be.security.auth.dto.LoginReq;
 import thanhtrancoder.domain_pro_be.security.auth.dto.RegisterReq;
 import thanhtrancoder.domain_pro_be.common.exceptions.CustomException;
 import thanhtrancoder.domain_pro_be.security.auth.dto.ResetPasswordReq;
 import thanhtrancoder.domain_pro_be.security.auth.dto.UpdateReq;
+
+import java.time.LocalDateTime;
 
 @Service
 public class AuthService {
@@ -31,6 +39,10 @@ public class AuthService {
     private EmailService emailService;
     @Autowired
     private PasswordResetsService passwordResetsService;
+    @Autowired
+    private NotificationService notificationService;
+    @Autowired
+    private DomainNameService domainNameService;
 
     public AccountEntity login(LoginReq loginReq) {
         AccountEntity account = accountService.loginByEmail(loginReq.getEmail());
@@ -80,8 +92,33 @@ public class AuthService {
             account.setTokenVersion(1);
             accountService.create(account);
 
+            // Create demo DomainName
+            DomainNameDto domainNameDto = new DomainNameDto();
+            String domainName = "demo" + StringUtils.getEmailUsername(account.getEmail());
+            Integer extendDomain = 1;
+            while (domainNameService.isAvailableDomain(domainName, 7L)) {
+                domainName = "demo" + StringUtils.getEmailUsername(account.getEmail()) + extendDomain;
+                extendDomain++;
+            }
+            domainNameDto.setDomainName(domainName);
+            domainNameDto.setDomainExtend(".org");
+            domainNameDto.setDomainExtendId(7L);
+            domainNameDto.setIsAutoRenewal(false);
+            domainNameDto.setRegisterAt(LocalDateTime.now());
+            domainNameDto.setExpiresAt(LocalDateTime.now().plusYears(1L));
+            domainNameDto.setIsBlock(false);
+            domainNameDto.setDnsProvider("CloudDNS");
+            domainNameService.create(domainNameDto, account.getAccountId());
+
             // Send email
             emailService.registrationSuccess(account.getAccountId());
+
+            // Create notification in app
+            NotificationDto notificationDto = new NotificationDto();
+            notificationDto.setType(ConstantValue.NOTIFICATION_TYPE_SUCCESS);
+            notificationDto.setTitle("Account has been created");
+            notificationDto.setContent("Notification of successful account creation");
+            notificationService.systemCreate(account.getAccountId(), notificationDto);
         } catch (Exception e) {
             if (e instanceof CustomException) {
                 throw new CustomException(e.getMessage());

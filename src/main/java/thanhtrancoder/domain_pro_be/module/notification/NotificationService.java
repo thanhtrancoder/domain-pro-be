@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import thanhtrancoder.domain_pro_be.common.exceptions.QueryException;
+import thanhtrancoder.domain_pro_be.common.utils.ConstantValue;
 import thanhtrancoder.domain_pro_be.module.email.EmailService;
 import thanhtrancoder.domain_pro_be.module.notification.dto.NotificationDto;
 import thanhtrancoder.domain_pro_be.module.notification.dto.NotificationNewsReq;
@@ -44,6 +45,7 @@ public class NotificationService {
                     NotificationEntity.class
             );
             notificationEntity.setAccountId(to);
+            notificationEntity.setStatus(ConstantValue.NOTIFICATION_STATUS_UNREAD);
             notificationEntity.setCreatedAt(LocalDateTime.now());
             notificationEntity.setCreatedBy(0L);
             notificationEntity.setIsDeleted(false);
